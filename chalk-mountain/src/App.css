@@ -15,7 +15,7 @@ body {
   gap: 2rem;
   padding: 0 1rem;
   padding-bottom: 5rem;
-}
+} 
 
 .pages{
   color: black;
@@ -47,7 +47,7 @@ table {
   width: 800px;
   height: 200px;
   background-color: white;
-  
+  text-align: center;
 }
 
 .tableheader{
