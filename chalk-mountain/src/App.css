@@ -2,12 +2,10 @@
   box-sizing: border-box;
 }
 body {
-  margin: 0;
+  margin: 2rem;
   background-color: #c4342c;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
+ 
 }
 
 

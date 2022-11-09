@@ -5,8 +5,7 @@
     justify-content: space-around;
     align-items: center;
     gap: 5rem;
-    padding-top: 5 rem;
-    padding-bottom: 5rem;
+    padding-bottom: 2rem;
     font-weight: bold;
   } 
   
@@ -32,7 +31,7 @@
   }
 
   .nav li:hover{
-    background-color: #777;
+    background-color: #94c9f5;
   }
 
   

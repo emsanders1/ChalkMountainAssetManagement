@@ -14,6 +14,8 @@ export default function Navbar() {
                 </ul>
                 <a href="/" className="site-title"> Chalk Mountain Services Asset Management</a>
                 <p className="nav-welcome">Welcome, John Doe!</p>
+                <a href="/login" className="logout"> Logout</a>
+
         </nav>
     )
 }

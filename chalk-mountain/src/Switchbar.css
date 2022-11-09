@@ -1,7 +1,22 @@
-.switch{
-    background-color: white;
+.switchbar{
+    gap: 28rem;
+    display: flex;
+    padding-bottom: 1rem;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
 }
-.buttons{
-    background-color: white;
-    color: black;
+
+.switch{
+    display: flex;
+    align-items: center;
+    align-content: flex-start;
+    justify-content: flex-start;
+}
+
+.search{
+    display: flex;
+    align-content: flex-end;
+    align-items: center;
+    justify-content: flex-end;
 }

@@ -1,5 +1,6 @@
 export default function Table(){
     return (
+    <div className="tableSection">
     <table>
       <tr className="tableheader">
         <th>ASSEST</th>
@@ -42,5 +43,6 @@ export default function Table(){
         <td>Update button</td>
       </tr>
     </table>
+    </div>
     )
 }
