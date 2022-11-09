@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Form } from 'react-bootstrap';
 import './index.css';
 import './App.css';
-import './Navbar.css';
-import './Table.css';
-import './Switchbar.css';
+import './components/Navbar.css';
+import './components/Table.css';
+import './components/Switchbar.css';
+import './pages/Login.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom"

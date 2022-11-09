@@ -1,3 +1,10 @@
+import Navbar from "../components/Navbar"
+
 export default function Tractors(){
-    return <h1>Tractors</h1>
+    return (
+    <div>
+    <Navbar/>
+    <h1>Tractors</h1>
+    </div>
+    )
 }

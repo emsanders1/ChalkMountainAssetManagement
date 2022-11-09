@@ -18,7 +18,7 @@
   .nav-welcome{
     color: black;
   }
-  .nav ul {
+  .pages{
     padding: 0;
     margin: 0;
     list-style: none;
@@ -34,4 +34,7 @@
     background-color: #94c9f5;
   }
 
+  .logout:hover{
+    background-color: #94c9f5;
+  }
   
