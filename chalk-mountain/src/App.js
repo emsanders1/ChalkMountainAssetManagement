@@ -10,9 +10,12 @@ function App() {
     <div className="App">
     <Navbar/>
     <Switchbar/>
-    <Table/>
+    {/* <Table/> */}
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/tractors" element={<Tractors />} />
+      <Route path="/trailers" element={<Trailers />} />
     </Routes>
     </div>  
     )
