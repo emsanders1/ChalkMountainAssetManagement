@@ -1,6 +1,6 @@
 export default function Table(){
     return (
-        <table>
+    <table>
       <tr className="tableheader">
         <th>ASSEST</th>
         <th>STATUS</th>

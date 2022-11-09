@@ -1,0 +1,38 @@
+.nav{
+    background-color: #c4342c;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 5rem;
+    padding-top: 5 rem;
+    padding-bottom: 5rem;
+    font-weight: bold;
+  } 
+  
+  .site-title{
+    font-size: 2rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  .nav-welcome{
+    color: black;
+  }
+  .nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav a{
+    color: inherit;
+  }
+
+  .nav li:hover{
+    background-color: #777;
+  }
+
+  
