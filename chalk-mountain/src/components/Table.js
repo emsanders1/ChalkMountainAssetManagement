@@ -16,7 +16,7 @@ export default function Table(){
         <td>02/12/2022</td>
         <td>J.F.</td>
         <td></td>
-        <td>Update button</td>
+        <td><button>Update</button></td>
       </tr>
       <tr>
         <td>DEF</td>
@@ -24,7 +24,7 @@ export default function Table(){
         <td>08/19/2022</td>
         <td>M.B.</td>
         <td>Punctured tire</td>
-        <td>Update button</td>
+        <td><button>Update</button></td>
       </tr>
       <tr>
         <td>GHI</td>
@@ -32,7 +32,7 @@ export default function Table(){
         <td>07/03/2022</td>
         <td>E.S.</td>
         <td>Needs New Shocks</td>
-        <td>Update button</td>
+        <td><button>Update</button></td>
       </tr>
       <tr>
         <td>JKL</td>
@@ -40,7 +40,7 @@ export default function Table(){
         <td>06/28/2022</td>
         <td>Z.N.</td>
         <td></td>
-        <td>Update button</td>
+        <td><button>Update</button></td>
       </tr>
     </table>
     </div>
