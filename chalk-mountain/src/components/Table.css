@@ -1,0 +1,24 @@
+.tableSection{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+    
+}
+table {
+    border: 2px solid black;
+    width: 800px;
+    height: 200px;
+    background-color: white;
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+
+  }
+  
+  .tableheader{
+    background-color: #d3d3d3;
+  }
+  th{
+    border-bottom:  1px solid black;
+  }

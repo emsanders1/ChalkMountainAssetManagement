@@ -1,0 +1,40 @@
+.nav{
+    background-color: #c4342c;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 5rem;
+    padding-bottom: 2rem;
+    font-weight: bold;
+  } 
+  
+  .site-title{
+    font-size: 2rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  .nav-welcome{
+    color: black;
+  }
+  .pages{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav a{
+    color: inherit;
+  }
+
+  .nav li:hover{
+    background-color: #94c9f5;
+  }
+
+  .logout:hover{
+    background-color: #94c9f5;
+  }
+  
