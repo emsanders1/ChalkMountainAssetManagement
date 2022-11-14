@@ -2,23 +2,36 @@
     display: flex;
     text-align: center;
     justify-content: center;
-    align-content: center;
-    
+    align-content: center;   
 }
 table {
     border: 2px solid black;
     width: 800px;
     height: 200px;
     background-color: white;
-    text-align: center;
-    justify-content: center;
-    align-content: center;
-
   }
   
-  .tableheader{
-    background-color: #d3d3d3;
-  }
-  th{
-    border-bottom:  1px solid black;
-  }
+th{
+  border-bottom:  1px solid black;
+}
+
+ #assetButton{
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+ }
+
+#statusButton{
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  
+}
+
+

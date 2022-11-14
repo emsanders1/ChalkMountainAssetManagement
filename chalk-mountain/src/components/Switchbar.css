@@ -7,16 +7,3 @@
     justify-content: center;
 }
 
-.switch{
-    display: flex;
-    align-items: center;
-    align-content: flex-start;
-    justify-content: flex-start;
-}
-
-.search{
-    display: flex;
-    align-content: flex-end;
-    align-items: center;
-    justify-content: flex-end;
-}
