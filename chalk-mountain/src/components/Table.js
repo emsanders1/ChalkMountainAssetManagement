@@ -1,5 +1,7 @@
 import Popup from '../pages/Popup';
 import React, { useState } from 'react';
+
+//SORT FUNCTION 
 const useSortableData = (assets, config = null) => {
   const [sortConfig, setSortConfig] = React.useState(config);
 
@@ -42,6 +44,7 @@ const AssetTable = (props) => {
     }
     return sortConfig.key === asset ? sortConfig.direction : undefined;
   };
+
   return (
     <table>
       <thead>
@@ -124,16 +127,7 @@ export default function Table(){
           />},
         ]}
       />
-    {isOpen && <Popup
-      content={<>
-        <b>Updating Asset</b>
-        <input type="radio" value="In-Service" name="updates" /> In-Service
-        <input type="radio" value="Out-Of-Service" name="updates" /> Out-Of-Service
-        <button>Cancel</button>
-        <button>Continue</button>
-      </>}
-      handleClose={togglePopup}
-    />}
+    {isOpen && <Popup handleClose={togglePopup}/>}
   </div>
     )
 }
