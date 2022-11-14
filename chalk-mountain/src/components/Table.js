@@ -1,5 +1,5 @@
-import React from 'react';
-
+import Popup from '../pages/Popup';
+import React, { useState } from 'react';
 const useSortableData = (assets, config = null) => {
   const [sortConfig, setSortConfig] = React.useState(config);
 
@@ -46,8 +46,9 @@ const AssetTable = (props) => {
     <table>
       <thead>
         <tr>
+          <th> TYPE </th>
           <th>
-            <button type="button" onClick={() => requestSort('asset')} className={getClassNamesFor('asset')} id='assetButton'> ASSET ▼▲ </button>
+            <button type="button" onClick={() => requestSort('asset')} className={getClassNamesFor('asset')} id='assetButton'> ASSET ▼▲</button>
           </th>
           <th>
             <button type="button" onClick={() => requestSort('status')} className={getClassNamesFor('status')} id="statusButton"> STATUS ▼▲</button>
@@ -61,6 +62,7 @@ const AssetTable = (props) => {
       <tbody>
         {assets.map((asset) => (
           <tr key={asset.id}>
+            <td>{asset.type}</td>
             <td>{asset.asset}</td>
             <td>{asset.status}</td>
             <td>{asset.date}</td>
@@ -75,17 +77,64 @@ const AssetTable = (props) => {
 };
 
 export default function Table(){
+    const [isOpen, setIsOpen] = useState(false);
+  
+    const togglePopup = () => {
+      setIsOpen(!isOpen);
+    }
     return (
     <div className="tableSection">
     <AssetTable
         assets={[
-          { id: 1, asset: 'ABC', status: 'IN-SERVICE', date: '02/12/2022', employee: 'J.F.', notes: '', modify: <button>Update</button> },
-          { id: 2, asset: 'DEF', status: 'OUT-OF-SERVICE', date: '08/19/2022', employee: 'M.B.', notes: 'Punctured tire', modify: <button>Update</button>  },
-          { id: 3, asset: 'GHI', status: 'OUT-OF-SERVICE', date: '07/03/2022', employee: 'E.S.', notes: 'Needs New Shocks', modify: <button>Update</button>  },
-          { id: 4, asset: 'JKL', status: 'IN-SERVICE', date: '06/28/2022', employee: 'Z.N.', notes: '', modify: <button>Update</button>  },
+          { id: 1,
+            type: 'Trailer',
+            asset: 'ABC',
+            status: 'IN-SERVICE',
+            date: '02/12/2022',
+            employee: 'J.F.',
+            notes: '', 
+            modify: <input type="button" value="update" onClick={togglePopup} 
+          /> },
+          { id: 2,
+            type: 'Tractor',
+            asset: 'DEF',
+            status: 'OUT-OF-SERVICE',
+            date: '08/19/2022',
+            employee: 'M.B.',
+            notes: 'Punctured tire',
+            modify: <input type="button" value="update" onClick={togglePopup}
+          /> },
+          { id: 3,
+            type: 'Tractor',
+            asset: 'GHI',
+            status: 'OUT-OF-SERVICE',
+            date: '07/03/2022',
+            employee: 'E.S.',
+            notes: 'Needs New Shocks', 
+            modify: <input type="button" value="update" onClick={togglePopup}
+          />},
+          { id: 4, 
+            type: 'Trailer',
+            asset: 'JKL', 
+            status: 'IN-SERVICE', 
+            date: '06/28/2022', 
+            employee: 'Z.N.', 
+            notes: '', 
+            modify: <input type="button" value="update" onClick={togglePopup}
+          />},
         ]}
       />
-    </div>
+    {isOpen && <Popup
+      content={<>
+        <b>Updating Asset</b>
+        <input type="radio" value="In-Service" name="updates" /> In-Service
+        <input type="radio" value="Out-Of-Service" name="updates" /> Out-Of-Service
+        <button>Cancel</button>
+        <button>Continue</button>
+      </>}
+      handleClose={togglePopup}
+    />}
+  </div>
     )
 }
 
