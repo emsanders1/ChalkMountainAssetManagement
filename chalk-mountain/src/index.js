@@ -6,6 +6,7 @@ import './components/Navbar.css';
 import './components/Table.css';
 import './components/Switchbar.css';
 import './pages/Login.css';
+import './pages/Popup.css'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom"

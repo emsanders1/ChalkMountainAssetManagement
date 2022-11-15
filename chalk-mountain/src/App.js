@@ -1,5 +1,3 @@
-import Navbar from "./components/Navbar"
-import Switchbar from "./components/Switchbar"
 import Home from "./pages/Home";
 import Tractors from "./pages/Tractors"
 import Trailers from "./pages/Trailers"

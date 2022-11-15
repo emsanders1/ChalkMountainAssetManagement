@@ -1,0 +1,15 @@
+TO DO 
+
+make page react to size change 
+
+
+make tractor/trailer section in table 
+    tractor only table on link click
+    trailer only table on link click
+
+popup window update onclick 
+in-service on click
+out-of-service on click
+search table 
+
+change sort symbol
