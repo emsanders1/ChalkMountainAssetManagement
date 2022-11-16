@@ -1,4 +1,4 @@
-import Popup from '../pages/Popup';
+import UpdatePopup from '../pages/UpdatePopup';
 import React, { useState } from 'react';
 
 //SORT FUNCTION 
@@ -127,7 +127,7 @@ export default function Table(){
           />},
         ]}
       />
-    {isOpen && <Popup handleClose={togglePopup}/>}
+    {isOpen && <UpdatePopup handleClose={togglePopup}/> }
   </div>
     )
 }
