@@ -9,7 +9,7 @@ const config = require('./config-env'),
 const viewAll = async() => {
     try {
         let pool = await sql.connect(config);
-        let assets = pool.request().query("SELECT Equipment.UNITID, Equipment.STATUS, t1.MOST_RECENT_UPDATE, t1.[USER], Note.NOTES FROM Equipment LEFT JOIN (SELECT Request.[UNITID], Request.[USER], MOST_RECENT_UPDATE FROM  Request INNER JOIN (SELECT [UNITID], MAX([TIME]) AS MOST_RECENT_UPDATE FROM Request GROUP BY [UNITID]) ms on Request.UNITID = ms.UNITID and MOST_RECENT_UPDATE = [TIME]) t1 ON Equipment.UNITID = t1.UNITID LEFT JOIN Note ON Note.UNITID = Equipment.UNITID")
+        let assets = pool.request().query("EXECUTE procViewAllAssets")
         console.log(assets);
         return assets;
     }
@@ -18,10 +18,10 @@ const viewAll = async() => {
     }
 }
 
-const viewAsset = async(UNITID) => {
+const viewAsset = async(UNITNUMBER) => {
     try {
         let pool = await sql.connect(config);
-        let assets = pool.request().query("EXECUTE procViewAsset @unitid = '" + UNITID + "'")
+        let assets = pool.request().query("execute procViewAsset @unitnumber = '" + UNITNUMBER + "'")
         console.log(assets);
         return assets;
     }
@@ -40,38 +40,38 @@ const initializeEquipment = async() => {
     }
 }
 
-const sendInService = async(USER, UNITID) => {
+const sendInService = async(USER, UNITNUMBER) => {
     try {
         let pool = await sql.connect(config);
-        pool.request().query("UPDATE Equipment SET STATUS = 1 WHERE UNITID = " + UNITID)
-        updateNotes(UNITID, null)
-        logRequest(USER, UNITID, true);
+        pool.request().query("UPDATE Equipment SET STATUS = 1 WHERE UNITNUMBER = '" + UNITNUMBER + "'")
+        updateNotes(UNITNUMBER, null)
+        logRequest(USER, UNITNUMBER, true);
     }
     catch(error) {
         console.log(error)
     }
 }
 
-const sendOutOfService = async(USER, UNITID, NOTES) => {
+const sendOutOfService = async(USER, UNITNUMBER, NOTES) => {
     try {
         let pool = await sql.connect(config);
-        pool.request().query("UPDATE Equipment SET STATUS = 0 WHERE UNITID = " + UNITID);
-        updateNotes(UNITID, NOTES);
-        logRequest(USER, UNITID, false);
+        pool.request().query("UPDATE Equipment SET STATUS = 0 WHERE UNITNUMBER = '" + UNITNUMBER + "'")
+        updateNotes(UNITNUMBER, NOTES);
+        logRequest(USER, UNITNUMBER, false);
     }
     catch(error) {
         console.log(error)
     }
 }
 
-const logRequest = async(USER, UNITID, movedInService) => {
+const logRequest = async(USER, UNITNUMBER, movedInService) => {
     try {
         let pool = await sql.connect(config);
         let queryString = null
         if(movedInService) 
-            queryString = "INSERT INTO Request(REQUEST_ID, [USER], UNITID, MOVED_IN_SERVICE, MOVED_OUT_OF_SERVICE) VALUES (NEWID(), '" + USER + "', '" + UNITID + "', '1', '0')";
+            queryString = "INSERT INTO Request(REQUEST_ID, [USER], UNITNUMBER, MOVED_IN_SERVICE, MOVED_OUT_OF_SERVICE) VALUES (NEWID(), '" + USER + "', '" + UNITNUMBER + "', '1', '0')";
         else
-            queryString = "INSERT INTO Request(REQUEST_ID, [USER], UNITID, MOVED_IN_SERVICE, MOVED_OUT_OF_SERVICE) VALUES (NEWID(), '" + USER + "', '" + UNITID + "', '0', '1')";
+            queryString = "INSERT INTO Request(REQUEST_ID, [USER], UNITNUMBER, MOVED_IN_SERVICE, MOVED_OUT_OF_SERVICE) VALUES (NEWID(), '" + USER + "', '" + UNITNUMBER + "', '0', '1')";
        
         pool.request().query(queryString);
     }
@@ -80,14 +80,14 @@ const logRequest = async(USER, UNITID, movedInService) => {
     }
 }
 
-const updateNotes = async(UNITID, NOTES) => {
+const updateNotes = async(UNITNUMBER, NOTES) => {
     try {
         let pool = await sql.connect(config);
         let queryString = null
         if(NOTES != null) 
-            queryString = "EXECUTE procUpdateInsertNotes @unitid = '" + UNITID + "', @notes = '" + NOTES + "'"
+            queryString = "EXECUTE procUpdateInsertNotes @unitnumber = '" + UNITNUMBER + "', @notes = '" + NOTES + "'"
         else
-            queryString = "EXECUTE procUpdateInsertNotes @unitid = '" + UNITID + "', @notes = NULL"
+            queryString = "EXECUTE procUpdateInsertNotes @unitnumber = '" + UNITNUMBER + "', @notes = NULL"
        
         pool.request().query(queryString);
     }

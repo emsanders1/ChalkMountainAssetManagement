@@ -6,6 +6,15 @@ db_operations.viewAll().then(res => {
     console.log(res);
 })
 
-db_operations.viewAsset('431').then(res => {
-    console.log(res);
-})
+// db_operations.sendOutOfService('MBolding', 'S211', 'Tire burst.')
+// db_operations.sendOutOfService('MBolding', 'S212', 'Radiator out.')
+
+db_operations.sendInService('ESanders', 'S211')
+db_operations.sendInService('JFlores', 'S212')
+
+// db_operations.sendOutOfService('ZNiece', 'S214', 'Bad fuel.')
+db_operations.sendInService('MBolding', 'S214')
+
+// db_operations.viewAsset('S214').then(res => {
+//     console.log(res)
+// })
