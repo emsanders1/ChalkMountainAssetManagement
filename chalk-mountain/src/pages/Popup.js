@@ -2,11 +2,21 @@ import React from "react";
 const Popup = props => {
 
   function outOfServiceFunction() {
-    var assetTable;
-    assetTable = document.getElementById("assetTable");
-    console.log(assetTable);
-    assetTable.innerHTML = "IN-SERVICE";
-    console.log(assetTable);
+    var assetStatus;
+    var assetNotes;
+    var assetDate;
+    assetStatus = document.getElementById("assetStatus");
+    assetNotes = document.getElementById("assetNotes");
+    assetDate = document.getElementById("assetDate");
+    console.log(assetStatus);
+    assetNotes.innerHTML = "";
+    assetStatus.innerHTML = "IN-SERVICE";
+    assetDate.innerHTML = "12/07/2022";
+    console.log(assetStatus);
+  }
+  function run(){
+    outOfServiceFunction();
+    props.handleClose();
   }
 
   return (
@@ -20,7 +30,7 @@ const Popup = props => {
         </div>
         <div className="popUpSaveButtons">
         <button onClick={props.handleClose}>Cancel</button>
-        <button onClick={outOfServiceFunction}>Continue</button>
+        <button onClick={run}>Continue</button>
         </div>
       </div>
     </div>

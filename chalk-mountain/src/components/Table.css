@@ -37,3 +37,11 @@ tr:nth-child(odd){
   font-weight: bold;
   font-size: 1rem;
 }
+#locationButton{
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+}
