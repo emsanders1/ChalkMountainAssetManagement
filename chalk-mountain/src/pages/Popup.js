@@ -1,6 +1,14 @@
 import React from "react";
- 
 const Popup = props => {
+
+  function outOfServiceFunction() {
+    var assetTable;
+    assetTable = document.getElementById("assetTable");
+    console.log(assetTable);
+    assetTable.innerHTML = "IN-SERVICE";
+    console.log(assetTable);
+  }
+
   return (
     <div className="popup-box">
       <div className="box">
@@ -12,7 +20,7 @@ const Popup = props => {
         </div>
         <div className="popUpSaveButtons">
         <button onClick={props.handleClose}>Cancel</button>
-        <button>Continue</button>
+        <button onClick={outOfServiceFunction}>Continue</button>
         </div>
       </div>
     </div>

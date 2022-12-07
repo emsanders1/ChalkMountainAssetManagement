@@ -13,7 +13,6 @@ export default function Tractors(){
     return (
     <div>
     <Navbar/>
-    <h1>Tractors Only Table</h1>
     <Switchbar/>
     <div className="tableSection">
     <AssetTable

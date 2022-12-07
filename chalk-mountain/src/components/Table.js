@@ -67,7 +67,7 @@ export const AssetTable = (props) => {
           <tr key={asset.id}>
             <td>{asset.type}</td>
             <td>{asset.asset}</td>
-            <td>{asset.status}</td>
+            <td id="assetTable">{asset.status}</td>
             <td>{asset.date}</td>
             <td>{asset.employee}</td>
             <td>{asset.notes}</td>
@@ -86,14 +86,15 @@ export default function Table(){
       setIsOpen(!isOpen);
     }
 
+    
     return (
     <div className="tableSection">
-    <AssetTable
+    <AssetTable 
         assets={[
           { id: 1,
             type: 'Trailer',
             asset: 'ABC',
-            status: 'IN-SERVICE',
+            status: 'OUT-OF-SERVICE',
             date: '02/12/2022',
             employee: 'J.F.',
             notes: '', 
