@@ -13,7 +13,6 @@ export default function Trailers(){
     return (
     <div>
     <Navbar/>
-    <h1>Trailers Only Table</h1>
     <Switchbar/>
     <div className="tableSection">
     <AssetTable

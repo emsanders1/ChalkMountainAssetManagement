@@ -69,7 +69,7 @@ export const AssetTable = (props) => {
             <td>{asset.type}</td>
             <td>{asset.asset}</td>
             <td>{asset.location}</td>
-            <td>{asset.status}</td>
+            <td id="assetTable">{asset.status}</td>
             <td>{asset.date}</td>
             <td>{asset.employee}</td>
             <td>{asset.notes}</td>
@@ -87,38 +87,18 @@ export default function Table(){
       setIsOpen(!isOpen);
     }
 
+    
     return (
     <div className="tableSection">
-    <AssetTable
+    <AssetTable 
         assets={[
           { id: 1,
             type: 'Trailer',
-            asset: 'S211',
-            location: 'Pleasanton',
-            status: 'OUT-OF-SERVICE',
-            date: '12/05/2022',
-            employee: 'MBolding',
-            notes: 'Tire burst', 
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 2,
-            type: 'Trailer',
-            asset: 'S212',
-            location: 'Pleasanton',
+            asset: 'ABC',
             status: 'IN-SERVICE',
-            date: '12/04/2022',
-            employee: 'JFlores',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 3,
-            type: 'Trailer',
-            asset: 'S214',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '12/04/2022',
-            employee: 'ZNiece',
-            notes: '',
+            date: '02/12/2022',
+            employee: 'J.F.',
+            notes: '', 
             modify: <input type="button" value="update" onClick={togglePopup}
           /> },
           { id: 4,
