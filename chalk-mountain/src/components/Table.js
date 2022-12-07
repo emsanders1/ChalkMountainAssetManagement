@@ -36,7 +36,8 @@ const useSortableData = (assets, config = null) => {
   return { assets: sortedAssets, requestSort, sortConfig };
 };
 
-const AssetTable = (props) => {
+
+export const AssetTable = (props) => {
   const { assets, requestSort, sortConfig } = useSortableData(props.assets);
   const getClassNamesFor = (asset) => {
     if (!sortConfig) {
@@ -44,11 +45,10 @@ const AssetTable = (props) => {
     }
     return sortConfig.key === asset ? sortConfig.direction : undefined;
   };
-
   return (
-    <table>
+    <table id="myTable">
       <thead>
-        <tr>
+        <tr id="tableHeader">
           <th> TYPE </th>
           <th>
             <button type="button" onClick={() => requestSort('asset')} className={getClassNamesFor('asset')} id='assetButton'> ASSET ▼▲</button>
@@ -81,10 +81,11 @@ const AssetTable = (props) => {
 
 export default function Table(){
     const [isOpen, setIsOpen] = useState(false);
-  
+
     const togglePopup = () => {
       setIsOpen(!isOpen);
     }
+
     return (
     <div className="tableSection">
     <AssetTable
@@ -96,7 +97,7 @@ export default function Table(){
             date: '02/12/2022',
             employee: 'J.F.',
             notes: '', 
-            modify: <input type="button" value="update" onClick={togglePopup} 
+            modify: <input type="button" value="update" onClick={togglePopup}
           /> },
           { id: 2,
             type: 'Tractor',
@@ -131,5 +132,4 @@ export default function Table(){
   </div>
     )
 }
-
 
