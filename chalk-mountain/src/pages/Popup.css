@@ -4,27 +4,26 @@
    
 
 .box {
-    position: relative;
-    width: 200%;
-    margin: 0 auto;
-    height: auto;
-    margin-top: calc(100vh - 85vh - 20px);
-    background: white;
-    gap: 1rem;
-    padding: 20px;
-    border: 3px solid black;
-    overflow: auto;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
+  position: fixed;
+  height: 200px;
+  width: 50%;
+  left: 25%;
+  top: 25%;
+  border: 1px solid #011627;
+  border-radius: 1em;
+  box-shadow: -2px 5px 5px #E71D36;
+  background-color: #FDFFFC;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: #011627;
   }
 
 .close-icon {
     content: 'x';
     cursor: pointer;
-    position: relative;
+    position: absolute;
     background: #ededed;
     width: 25px;
     height: 25px;
@@ -33,7 +32,27 @@
     text-align: center;
     border: 1px solid #999;
     font-size: 20px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
   } 
 
+  .popup-title {
+    margin-top: 20px;
+  }
+
+  .save-button {
+    margin-left: 30px;
+    margin-bottom: 10px;
+  }
+
+  .in-service-btn {
+    margin-bottom: 10px;
+  }
+
+  .out-of-service-btn {
+    margin-right: 20px;
+    margin-bottom: 10px;
+  }
  
   

@@ -23,14 +23,14 @@ const Popup = props => {
     <div className="popup-box">
       <div className="box">
         <span className="close-icon" onClick={props.handleClose}>x</span>
-        <b>Updating Asset</b>
+        <b className="popup-title">Updating Asset</b>
         <div className="popUpRadioButtons">
-        <input type="radio" value="In-Service" name="updates" /> In-Service
-        <input type="radio" value="Out-Of-Service" name="updates" /> Out-Of-Service
+        <input type="radio" value="In-Service" name="updates" className="in-service-btn"/> In-Service
+        <input type="radio" value="Out-Of-Service" name="updates"/> Out-Of-Service
         </div>
         <div className="popUpSaveButtons">
-        <button onClick={props.handleClose}>Cancel</button>
-        <button onClick={run}>Continue</button>
+        <button onClick={props.handleClose} className="continue-button">Cancel</button>
+        <button onClick={run} className="save-button">Continue</button>
         </div>
       </div>
     </div>
