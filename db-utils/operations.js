@@ -17,8 +17,8 @@ const viewAll = async() => {
 const viewAsset = async(UNITNUMBER) => {
     try {
         let pool = await sql.connect(config);
-        let assets = pool.request().query("EXECUTE procViewAsset @unitnumber = '" + UNITNUMBER + "'")
-        return assets;
+        let asset = pool.request().query("EXECUTE procViewAsset @unitnumber = '" + UNITNUMBER + "'");
+        return asset;
     }
     catch(error) {
         console.log(error);
@@ -50,7 +50,18 @@ const logRequest = async(USER, UNITNUMBER, newStatus) => {
     try {
         let pool = await sql.connect(config);
         let newStatusBit = newStatus ? '1' : '0';
-        pool.request().query("INSERT INTO Request(REQUEST_ID, [USER], UNITNUMBER, STATUS) VALUES (NEWID(), '" + USER + "', '" + UNITNUMBER + "', " + statusBit + ")");
+        pool.request().query("INSERT INTO Request(REQUEST_ID, [USER], UNITNUMBER, STATUS) VALUES (NEWID(), '" + USER + "', '" + UNITNUMBER + "', " + newStatusBit + ")");
+    }
+    catch(error) {
+        console.log(error)
+    }
+}
+
+const getAssetStatus = async(UNITNUMBER) => {
+    try {
+        let pool = await sql.connect(config)
+        let status = pool.request().query("EXECUTE procGetAssetStatus @unitnumber = '" + UNITNUMBER + "'")
+        return status;
     }
     catch(error) {
         console.log(error)
@@ -61,5 +72,6 @@ module.exports= {
     viewAll,
     sendInService,
     sendOutOfService,
-    viewAsset
+    viewAsset,
+    getAssetStatus
 }

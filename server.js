@@ -14,6 +14,6 @@ db_operations = require('./db-utils/operations');
 // db_operations.sendOutOfService('MBolding', 'S212', 'Radiator out.')
 // db_operations.sendOutOfService('ZNiece', 'S214', 'Bad fuel.')
 
-db_operations.viewAsset('S211').then(res => {
-    console.log(res)
+db_operations.getAssetStatus('S211').then(res => {
+    console.log(res.recordset[0]['STATUS']);
 })
