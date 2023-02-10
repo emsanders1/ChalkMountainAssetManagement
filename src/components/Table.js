@@ -321,20 +321,24 @@ export default function DenseTable() {
       <Table className={classes.table} size="small">
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell align="right">Title</TableCell>
-            <TableCell align="right">Body</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell align="right">Asset</TableCell>
+            <TableCell align="right">Location</TableCell>
+            <TableCell align="right">Status</TableCell>
+            <TableCell align="right">Date Last Modified</TableCell>
+            <TableCell align="right">Employee</TableCell>
+            <TableCell align="right">Notes</TableCell>
+            <TableCell align="right">Modify</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.map(row => (
             <TableRow key={row.id}>
-              <TableCell component="th" scope="row">
-                {row.id}
-              </TableCell>
+              <TableCell component="th" scope="row">{row.LOCATION}</TableCell>
               <TableCell align="right">{row.title}</TableCell>
               <TableCell align="right">{row.body}</TableCell>
             </TableRow>
+            // change to unitnumber, location, status, most_recent_update, user, notes
           ))}
         </TableBody>
       </Table>
