@@ -267,9 +267,10 @@ export default function EnhancedTable() {
                                     return (
                                         data.map(row => (
                                             <TableRow key={row.UNITNUMBER}>
+                                                <TableCell>{row.TYPE}</TableCell>
                                                 <TableCell>{row.UNITNUMBER}</TableCell>
                                                 <TableCell>{row.LOCATION}</TableCell>
-                                                <TableCell>{row.STATUS}</TableCell>
+                                                <TableCell>{row.STATUS ? "In Service" : "Out of Service"}</TableCell>
                                                 <TableCell>{row.MOST_RECENT_UPDATE}</TableCell>
                                                 <TableCell>{row.USER}</TableCell>
                                                 <TableCell>{row.NOTES}</TableCell>
