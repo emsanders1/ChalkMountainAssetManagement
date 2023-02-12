@@ -8,7 +8,6 @@ export default function Home(){
         <Navbar/>
         <Switchbar/>
         <SortableTable/>
-        <App/>
         </div>
     )
 }

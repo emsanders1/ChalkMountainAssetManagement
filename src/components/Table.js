@@ -220,8 +220,7 @@ export default function EnhancedTable() {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-            // fetch('https://localhost:8090/api/assets')
-            fetch('https://jsonplaceholder.typicode.com/posts')
+            fetch('http://localhost:8090/api/assets')
               .then(response => response.json())
               .then(data => setData(data));
           }, []);
@@ -264,13 +263,16 @@ export default function EnhancedTable() {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
-
+                                    
                                     return (
                                         data.map(row => (
-                                            <TableRow key={row.id}>
-                                                <TableCell component="th" scope="row">{row.LOCATION}</TableCell>
-                                                <TableCell align="right">{row.title}</TableCell>
-                                                <TableCell align="right">{row.body}</TableCell>
+                                            <TableRow key={row.UNITNUMBER}>
+                                                <TableCell>{row.UNITNUMBER}</TableCell>
+                                                <TableCell>{row.LOCATION}</TableCell>
+                                                <TableCell>{row.STATUS}</TableCell>
+                                                <TableCell>{row.MOST_RECENT_UPDATE}</TableCell>
+                                                <TableCell>{row.USER}</TableCell>
+                                                <TableCell>{row.NOTES}</TableCell>
                                             </TableRow>
                                             // change to unitnumber, location, status, most_recent_update, user, notes
                                             ))
