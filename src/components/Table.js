@@ -1,1384 +1,390 @@
-import Popup from '../pages/Popup';
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Paper from '@mui/material/Paper';
+import { visuallyHidden } from '@mui/utils';
+import {alpha, styled} from "@mui/material/styles";
+import InputBase from "@mui/material/InputBase";
+import {useState} from "react";
+import SearchIcon from "@mui/icons-material/Search";
 
-//SORT FUNCTION 
-const useSortableData = (assets, config = null) => {
-  const [sortConfig, setSortConfig] = React.useState(config);
-
-  const sortedAssets = React.useMemo(() => {
-    let sortableAssets = [...assets];
-    if (sortConfig !== null) {
-      sortableAssets.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableAssets;
-  }, [assets, sortConfig]);
-
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'ascending'
-    ) {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  return { assets: sortedAssets, requestSort, sortConfig };
-};
-
-
-export const AssetTable = (props) => {
-  const { assets, requestSort, sortConfig } = useSortableData(props.assets);
-  const getClassNamesFor = (asset) => {
-    if (!sortConfig) {
-      return;
-    }
-    return sortConfig.key === asset ? sortConfig.direction : undefined;
-  };
-  return (
-    <table id="myTable">
-      <thead>
-        <tr id="tableHeader">
-          <th> TYPE </th>
-          <th>
-            <button type="button" onClick={() => requestSort('asset')} className={getClassNamesFor('asset')} id='assetButton'> ASSET ▼▲</button>
-          </th>
-          <th> 
-            <button type="button" onClick={() => requestSort('location')} className={getClassNamesFor('location')} id='locationButton'> LOCATION ▼▲</button>
-          </th>
-          <th>
-            <button type="button" onClick={() => requestSort('status')} className={getClassNamesFor('status')} id="statusButton"> STATUS ▼▲</button>
-          </th>
-          <th> DATE LAST MODIFIED </th>
-          <th> Employee</th>
-          <th> Notes </th>
-          <th> Modify </th>
-        </tr>
-      </thead>
-      <tbody>
-        {assets.map((asset) => (
-          <tr key={asset.id}>
-            <td>{asset.type}</td>
-            <td>{asset.asset}</td>
-            <td>{asset.location}</td>
-            <td id="assetStatus">{asset.status}</td>
-            <td id="assetDate">{asset.date}</td>
-            <td>{asset.employee}</td>
-            <td id="assetNotes">{asset.notes}</td>
-            <td>{asset.modify}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-export default function Table(){
-    const [isOpen, setIsOpen] = useState(false);
-
-    const togglePopup = () => {
-      setIsOpen(!isOpen);
-    }
-
-    
-    return (
-    <div className="tableSection">
-    <AssetTable 
-        assets={[
-          { id: 1,
-            type: 'Trailer',
-            asset: 'S211',
-            location: 'Pleasanton',
-            status: 'OUT-OF-SERVICE',
-            date: '12/05/22',
-            employee: '',
-            notes: 'Tire Burst',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 2,
-            type: 'Trailer',
-            asset: 'S212',
-            location: 'Pleasanton',
-            status: 'OUT-OF-SERVICE',
-            date: '12/05/2022',
-            employee: '',
-            notes: 'Radiator Broken',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 3,
-            type: 'Trailer',
-            asset: 'S214',
-            location: 'Pleasanton',
-            status: 'OUT-OF-SERVICE',
-            date: '12/05/2022',
-            employee: '',
-            notes: 'Crack in Windshield',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 4,
-            type: 'Trailer',
-            asset: 'S215',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 5,
-            type: 'Trailer',
-            asset: 'S216',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 6,
-            type: 'Trailer',
-            asset: 'S217',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 7,
-            type: 'Trailer',
-            asset: 'S218',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 8,
-            type: 'Trailer',
-            asset: 'G3272',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 9,
-            type: 'Trailer',
-            asset: 'G3273',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 10,
-            type: 'Trailer',
-            asset: 'G3274',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 11,
-            type: 'Trailer',
-            asset: 'G3275',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 12,
-            type: 'Trailer',
-            asset: 'G3276',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 13,
-            type: 'Trailer',
-            asset: 'G3277',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 14,
-            type: 'Trailer',
-            asset: 'G3278',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 15,
-            type: 'Trailer',
-            asset: 'G3279',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 16,
-            type: 'Trailer',
-            asset: 'G3280',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 17,
-            type: 'Trailer',
-            asset: 'G3281',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 18,
-            type: 'Tractor',
-            asset: '1627',
-            location: 'Pleasanton',
-            status: 'OUT-OF-SERVICE',
-            date: '12/05/2022',
-            employee: '',
-            notes: 'Tire leaking air',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 19,
-            type: 'Tractor',
-            asset: '1634',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 20,
-            type: 'Tractor',
-            asset: '1641',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 21,
-            type: 'Tractor',
-            asset: '1645',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 22,
-            type: 'Trailer',
-            asset: 'S519',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 23,
-            type: 'Trailer',
-            asset: 'S520',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 24,
-            type: 'Trailer',
-            asset: 'S521',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 25,
-            type: 'Trailer',
-            asset: 'S522',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 26,
-            type: 'Trailer',
-            asset: 'S523',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 27,
-            type: 'Trailer',
-            asset: 'S524',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 28,
-            type: 'Trailer',
-            asset: 'S525',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 29,
-            type: 'Trailer',
-            asset: 'S526',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 30,
-            type: 'Trailer',
-            asset: 'S527',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 31,
-            type: 'Trailer',
-            asset: 'S528',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 32,
-            type: 'Trailer',
-            asset: 'S529',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 33,
-            type: 'Trailer',
-            asset: 'S530',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 34,
-            type: 'Tractor',
-            asset: '1725',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 35,
-            type: 'Tractor',
-            asset: '1726',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 36,
-            type: 'Tractor',
-            asset: '1737',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 37,
-            type: 'Tractor',
-            asset: '1939',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 38,
-            type: 'Tractor',
-            asset: '1940',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 39,
-            type: 'Tractor',
-            asset: '1941',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 40,
-            type: 'Tractor',
-            asset: '1941',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 41,
-            type: 'Tractor',
-            asset: '1942',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 42,
-            type: 'Tractor',
-            asset: '1943',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 43,
-            type: 'Tractor',
-            asset: '1936',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 44,
-            type: 'Tractor',
-            asset: '1944',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 45,
-            type: 'Tractor',
-            asset: '1945',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 46,
-            type: 'Tractor',
-            asset: '1946',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 47,
-            type: 'Trailer',
-            asset: 'S832',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 48,
-            type: 'Trailer',
-            asset: 'S833',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 49,
-            type: 'Trailer',
-            asset: 'S834',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 50,
-            type: 'Trailer',
-            asset: 'S835',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 51,
-            type: 'Trailer',
-            asset: 'S836',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 52,
-            type: 'Trailer',
-            asset: 'S837',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 53,
-            type: 'Trailer',
-            asset: 'S838',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 54,
-            type: 'Trailer',
-            asset: 'S839',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 55,
-            type: 'Trailer',
-            asset: 'S840',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 56,
-            type: 'Trailer',
-            asset: 'S841',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 57,
-            type: 'Tractor',
-            asset: '1947',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 58,
-            type: 'Tractor',
-            asset: '1949',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 59,
-            type: 'Tractor',
-            asset: '1950',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 60,
-            type: 'Trailer',
-            asset: 'S842',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 61,
-            type: 'Trailer',
-            asset: 'S843',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 62,
-            type: 'Trailer',
-            asset: 'S844',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 63,
-            type: 'Trailer',
-            asset: 'S845',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 64,
-            type: 'Trailer',
-            asset: 'S846',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 65,
-            type: 'Trailer',
-            asset: 'S847',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 66,
-            type: 'Trailer',
-            asset: 'S848',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 67,
-            type: 'Trailer',
-            asset: 'S849',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 68,
-            type: 'Trailer',
-            asset: 'S850',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 69,
-            type: 'Trailer',
-            asset: 'S851',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 70,
-            type: 'Tractor',
-            asset: '1952',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 71,
-            type: 'Tractor',
-            asset: '1953',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 72,
-            type: 'Tractor',
-            asset: '1954',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 73,
-            type: 'Tractor',
-            asset: '1955',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 74,
-            type: 'Tractor',
-            asset: '1957',
-            location: 'Pleasanton',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 75,
-            type: 'Tractor',
-            asset: '1958',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 76,
-            type: 'Tractor',
-            asset: '1960',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 77,
-            type: 'Tractor',
-            asset: '2001',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 78,
-            type: 'Tractor',
-            asset: '2002',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 79,
-            type: 'Tractor',
-            asset: '2003',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 80,
-            type: 'Tractor',
-            asset: '2004',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 81,
-            type: 'Tractor',
-            asset: '2005',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 82,
-            type: 'Tractor',
-            asset: '2007',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 83,
-            type: 'Tractor',
-            asset: '2008',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 84,
-            type: 'Tractor',
-            asset: '2009',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 85,
-            type: 'Tractor',
-            asset: '2010',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 86,
-            type: 'Tractor',
-            asset: '2011',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 87,
-            type: 'Tractor',
-            asset: '2012',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 88,
-            type: 'Tractor',
-            asset: '2014',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 89,
-            type: 'Tractor',
-            asset: '2015',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 90,
-            type: 'Tractor',
-            asset: '2016',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 91,
-            type: 'Tractor',
-            asset: '2017',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 92,
-            type: 'Tractor',
-            asset: '2018',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 93,
-            type: 'Tractor',
-            asset: '2019',
-            location: 'ZT',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 94,
-            type: 'Tractor',
-            asset: '2020',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 95,
-            type: 'Tractor',
-            asset: '2021',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 96,
-            type: 'Trailer',
-            asset: 'S873',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 97,
-            type: 'Trailer',
-            asset: 'S874',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 98,
-            type: 'Trailer',
-            asset: 'S875',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 99,
-            type: 'Trailer',
-            asset: 'S876',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 100,
-            type: 'Trailer',
-            asset: 'S877',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 101,
-            type: 'Trailer',
-            asset: 'S878',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 102,
-            type: 'Trailer',
-            asset: 'S879',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 103,
-            type: 'Trailer',
-            asset: 'S880',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 104,
-            type: 'Trailer',
-            asset: 'S881',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 105,
-            type: 'Trailer',
-            asset: 'S882',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 106,
-            type: 'Trailer',
-            asset: 'S883',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 107,
-            type: 'Trailer',
-            asset: 'S884',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 108,
-            type: 'Trailer',
-            asset: 'S885',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 109,
-            type: 'Trailer',
-            asset: 'S886',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 110,
-            type: 'Trailer',
-            asset: 'S887',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 111,
-            type: 'Tractor',
-            asset: '2022',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 112,
-            type: 'Tractor',
-            asset: '2023',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 113,
-            type: 'Tractor',
-            asset: '2024',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 114,
-            type: 'Tractor',
-            asset: '2025',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 115,
-            type: 'Tractor',
-            asset: '2026',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 116,
-            type: 'Tractor',
-            asset: '2027',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 117,
-            type: 'Tractor',
-            asset: '2028',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 118,
-            type: 'Tractor',
-            asset: '2029',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 119,
-            type: 'Tractor',
-            asset: '2030',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 120,
-            type: 'Tractor',
-            asset: '2031',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 121,
-            type: 'Tractor',
-            asset: '2032',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 122,
-            type: 'Tractor',
-            asset: '2033',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 123,
-            type: 'Tractor',
-            asset: '2034',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 124,
-            type: 'Tractor',
-            asset: '2035',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 125,
-            type: 'Tractor',
-            asset: '2036',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 126,
-            type: 'Tractor',
-            asset: '2037',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 127,
-            type: 'Tractor',
-            asset: '2038',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-          { id: 128,
-            type: 'Tractor',
-            asset: '2039',
-            location: 'Kermit',
-            status: 'IN-SERVICE',
-            date: '',
-            employee: '',
-            notes: '',
-            modify: <input type="button" value="update" onClick={togglePopup}
-          /> },
-        ]}
-        
-      />
-    {isOpen && <Popup handleClose={togglePopup}/>}
-  </div>
-    )
+function createData(type, asset, location, status, date, employee, notes, modify) {
+    return {
+        type,
+        asset,
+        location,
+        status,
+        date,
+        employee,
+        notes,
+        modify
+    };
 }
 
+// const rows = [
+//     createData('Trailer', 'S211', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", 'Tire Burst', <button>Update</button>),
+//     createData('Trailer', 'S212', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", 'Radiator Broken', <button>Update</button>),
+//     createData('Tractor', 'S214', 'ZT', 'IN-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S215', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S216', 'ZT', 'IN-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S217', 'ZT', 'IN-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Tractor', 'S218', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S220', 'ZT', 'IN-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S223', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Tractor', 'S234', 'ZT', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S245', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S256', 'ZT', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+//     createData('Trailer', 'S258', 'Pleasanton', 'OUT-OF-SERVICE', '12/05/22', "M.F.", '', <button>Update</button>),
+// ];
+
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 650,
+  },
+});
+
+function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+        return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+        return 1;
+    }
+    return 0;
+}
+
+function getComparator(order, orderBy) {
+    return order === 'desc'
+        ? (a, b) => descendingComparator(a, b, orderBy)
+        : (a, b) => -descendingComparator(a, b, orderBy);
+}
+function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0]);
+        if (order !== 0) {
+            return order;
+        }
+        return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+    {
+        id: 'type',
+        disablePadding: true,
+        label: 'Type',
+    },
+    {
+        id: 'asset',
+        disablePadding: false,
+        label: 'Asset',
+    },
+    {
+        id: 'location',
+        disablePadding: false,
+        label: 'Location',
+    },
+    {
+        id: 'status',
+        disablePadding: false,
+        label: 'Status',
+    },
+    {
+        id: 'date',
+        disablePadding: false,
+        label: 'Date Last Modified',
+    },
+    {
+        id: 'employee',
+        disablePadding: false,
+        label: 'Employee',
+    },
+    {
+        id: 'notes',
+        disablePadding: false,
+        label: 'Notes',
+    },
+    {
+        id: 'modify',
+        disablePadding: false,
+        label: 'Modify',
+    },
+];
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.55),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.75),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(1),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '12ch',
+            '&:focus': {
+                width: '20ch',
+            },
+        },
+    },
+}));
+
+function EnhancedTableHead(props) {
+    const { order, orderBy, onRequestSort } =
+        props;
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property);
+    };
+
+    return (
+        <TableHead>
+            <TableRow>
+                {headCells.map((headCell) => (
+                    <TableCell
+                        key={headCell.id}
+                        align={"center"}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell.id}
+                            direction={orderBy === headCell.id ? order : 'asc'}
+                            onClick={createSortHandler(headCell.id)}
+                        >
+                            {headCell.label}
+                            {orderBy === headCell.id ? (
+                                <Box component="span" sx={visuallyHidden}>
+                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                </Box>
+                            ) : null}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
+        </TableHead>
+    );
+}
+
+EnhancedTableHead.propTypes = {
+    onRequestSort: PropTypes.func.isRequired,
+    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+    orderBy: PropTypes.string.isRequired,
+};
+
+export default function EnhancedTable() {
+    const [order, setOrder] = React.useState('asc');
+    const [orderBy, setOrderBy] = React.useState('asset');
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const classes = useStyles();
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+            fetch('http://localhost:8090/api/assets')
+              .then(response => response.json())
+              .then(data => setData(data));
+          }, []);
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
+
+    return (
+        <Box sx={{ width: '100%' }}>
+            <Paper sx={{ width: '100%', mb: 2 }}>
+                <TableContainer id={"myTable"}>
+                    <Table
+                        sx={{ minWidth: 750 }}
+                        aria-labelledby="tableTitle"
+                    >
+                        <EnhancedTableHead
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
+                            rowCount={data.length}
+                        />
+                        <TableBody>
+                            {stableSort(data, getComparator(order, orderBy))
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((row, index) => {
+                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                    
+                                    return (
+                                        data.map(row => (
+                                            <TableRow key={row.UNITNUMBER}>
+                                                <TableCell>{row.TYPE}</TableCell>
+                                                <TableCell>{row.UNITNUMBER}</TableCell>
+                                                <TableCell>{row.LOCATION}</TableCell>
+                                                <TableCell>{row.STATUS ? "In Service" : "Out of Service"}</TableCell>
+                                                <TableCell>{row.MOST_RECENT_UPDATE}</TableCell>
+                                                <TableCell>{row.USER}</TableCell>
+                                                <TableCell>{row.NOTES}</TableCell>
+                                            </TableRow>
+                                            // change to unitnumber, location, status, most_recent_update, user, notes
+                                            ))
+                                    );
+                                })}
+                            {emptyRows > 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    // count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Paper>
+
+        </Box>
+    );
+}
+
+// import React, { useState, useEffect } from 'react';
+// import { makeStyles } from '@material-ui/core/styles';
+// import Table from '@material-ui/core/Table';
+// import TableBody from '@material-ui/core/TableBody';
+// import TableCell from '@material-ui/core/TableCell';
+// import TableHead from '@material-ui/core/TableHead';
+// import TableRow from '@material-ui/core/TableRow';
+// import Paper from '@material-ui/core/Paper';
+
+// const useStyles = makeStyles({
+//   root: {
+//     width: '100%',
+//     overflowX: 'auto',
+//   },
+//   table: {
+//     minWidth: 650,
+//   },
+// });
+
+
+// function descendingComparator(a, b, orderBy) {
+//         if (b[orderBy] < a[orderBy]) {
+//             return -1;
+//         }
+//         if (b[orderBy] > a[orderBy]) {
+//             return 1;
+//         }
+//         return 0;
+// }
+    
+// function getComparator(order, orderBy) {
+//     return order === 'desc'
+//         ? (a, b) => descendingComparator(a, b, orderBy)
+//         : (a, b) => -descendingComparator(a, b, orderBy);
+// }
+// function stableSort(array, comparator) {
+//     const stabilizedThis = array.map((el, index) => [el, index]);
+//     stabilizedThis.sort((a, b) => {
+//         const order = comparator(a[0], b[0]);
+//         if (order !== 0) {
+//             return order;
+//         }
+//         return a[1] - b[1];
+//     });
+//     return stabilizedThis.map((el) => el[0]);
+// }
+
+// export default function DenseTable() {
+//   const classes = useStyles();
+//   const [data, setData] = useState([]);
+
+//   useEffect(() => {
+//     fetch('https://localhost:8090/api/assets')
+//       .then(response => response.json())
+//       .then(data => setData(data));
+//   }, []);
+
+//   return (
+//     <Paper className={classes.root}>
+//       <Table className={classes.table} size="small">
+//         <TableHead>
+//           <TableRow>
+//             <TableCell>Type</TableCell>
+//             <TableCell align="right">Asset</TableCell>
+//             <TableCell align="right">Location</TableCell>
+//             <TableCell align="right">Status</TableCell>
+//             <TableCell align="right">Date Last Modified</TableCell>
+//             <TableCell align="right">Employee</TableCell>
+//             <TableCell align="right">Notes</TableCell>
+//             <TableCell align="right">Modify</TableCell>
+//           </TableRow>
+//         </TableHead>
+//         <TableBody>
+//           {data.map(row => (
+//             <TableRow key={row.id}>
+//               <TableCell component="th" scope="row">{row.LOCATION}</TableCell>
+//               <TableCell align="right">{row.title}</TableCell>
+//               <TableCell align="right">{row.body}</TableCell>
+//             </TableRow>
+//             // change to unitnumber, location, status, most_recent_update, user, notes
+//           ))}
+//         </TableBody>
+//       </Table>
+//     </Paper>
+//   );
+// }
