@@ -270,7 +270,7 @@ export default function EnhancedTable() {
                                                 <TableCell>{row.TYPE}</TableCell>
                                                 <TableCell>{row.UNITNUMBER}</TableCell>
                                                 <TableCell>{row.LOCATION}</TableCell>
-                                                <TableCell>{row.STATUS ? "In Service" : "Out of Service"}</TableCell>
+                                                <TableCell>{row.STATUS  == null ? "In Service" : (row.STATUS ? "In Service" : "Out of Service")}</TableCell>
                                                 <TableCell>{row.MOST_RECENT_UPDATE}</TableCell>
                                                 <TableCell>{row.USER}</TableCell>
                                                 <TableCell>{row.NOTES}</TableCell>
