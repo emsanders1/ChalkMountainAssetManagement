@@ -2,10 +2,17 @@ const { user } = require('./config-env');
 const config = require('./config-env'),
       sql    = require('mssql');
 
-const viewAll = async() => {
+let loadTempTable = "DROP TABLE IF EXISTS #tmpTable; CREATE TABLE ##tmpTable([TYPE] nvarchar(20), [UNITNUMBER] nvarchar(15), [LOCATION] nvarchar(20), [STATUS] bit, [MOST_RECENT_UPDATE] nvarchar(50), [USER] nvarchar(50), [NOTES] nvarchar(max)); INSERT INTO #tmpTable EXECUTE procViewAllAssets;"
+
+const viewAll = async(itemsPerPage, page, orderBy, order) => {
     try {
+        console.log(itemsPerPage);
+        console.log(page);
+        console.log(orderBy);
+        console.log(order);
         let pool = await sql.connect(config);
-        let assets = pool.request().query("EXECUTE procViewAllAssets")
+        let tempTable = pool.request().query(loadTempTable);
+        let assets = pool.request().query("USE CMSAMS; SELECT * FROM ##tmpTable ORDER BY [" + orderBy + "] " + order + " OFFSET " + (itemsPerPage * page) + " ROWS FETCH NEXT " + itemsPerPage + " ROWS ONLY;")
         console.log(assets);
         return assets;
     }

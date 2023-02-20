@@ -21,34 +21,40 @@ router.use((request, response, next) => {
  
  
 router.route('/assets').get((request, response) => {
-  db.viewAll().then((data) => {
-    response.status(200).json(data.recordset);
-  })
+  if(request.query.assetId === undefined) {
+    // Default pagination settings
+    let itemsPerPage = request.query.itemsPerPage === undefined ? 50 : request.query.itemsPerPage;
+    let page = request.query.page === undefined ? 1 : request.query.page;
+    let orderBy = request.query.orderBy === undefined ? "UNITNUMBER" : request.query.orderBy;
+    let order = request.query.order === undefined ? "ASC" : request.query.order;
+
+    db.viewAll(itemsPerPage, page, orderBy, order).then((data) => {
+      response.status(200).json(data.recordset);
+    })
+  } else {
+    db.viewAsset(request.query.assetId).then((data) => {
+      response.status(200).json(data.recordset);
+    })
+  }
 })
 
-router.route('/assets/:assetId').get((request, response) => {
-  db.viewAsset(request.params.assetId).then((data) => {
-    response.status(200).json(data.recordset);
-  })
-})
-
-router.route('/assets/sendInService/:assetId').post((request, response) => {
+router.route('/assets/sendInService').post((request, response) => {
   console.log("Send in service request received.")
-  db.getAssetStatus(request.params.assetId).then((data)  => {
+  db.getAssetStatus(request.query.assetId).then((data)  => {
     if(data.recordset[0]['STATUS']) {
       response.sendStatus(304);
     } else {
-      db.sendInService("MBoldng", request.params.assetId);
+      db.sendInService(request.query.user, request.query.assetId);
       response.sendStatus(200);
     }
   })
 })
 
-router.route('/assets/sendOutOfService/:assetId/:notes').post((request, response) => {
+router.route('/assets/sendOutOfService').post((request, response) => {
   console.log("Send out of service request received.")
   db.getAssetStatus(request.params.assetId).then((data)  => {
     if(data.recordset[0]['STATUS']) {
-      db.sendOutOfService("MBoldng", request.params.assetId, request.params.notes);
+      db.sendOutOfService(request.query.user, request.query.assetId, request.query.notes);
       response.sendStatus(200);
     } else {
       response.sendStatus(304);
