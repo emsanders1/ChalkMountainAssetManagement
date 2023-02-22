@@ -2,18 +2,17 @@ const { user } = require('./config-env');
 const config = require('./config-env'),
       sql    = require('mssql');
 
-let loadTempTable = "DROP TABLE IF EXISTS #tmpTable; CREATE TABLE ##tmpTable([TYPE] nvarchar(20), [UNITNUMBER] nvarchar(15), [LOCATION] nvarchar(20), [STATUS] bit, [MOST_RECENT_UPDATE] nvarchar(50), [USER] nvarchar(50), [NOTES] nvarchar(max)); INSERT INTO #tmpTable EXECUTE procViewAllAssets;"
-
-const viewAll = async(itemsPerPage, page, orderBy, order) => {
+const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
     try {
-        console.log(itemsPerPage);
-        console.log(page);
-        console.log(orderBy);
-        console.log(order);
-        let pool = await sql.connect(config);
-        let tempTable = pool.request().query(loadTempTable);
-        let assets = pool.request().query("USE CMSAMS; SELECT * FROM ##tmpTable ORDER BY [" + orderBy + "] " + order + " OFFSET " + (itemsPerPage * page) + " ROWS FETCH NEXT " + itemsPerPage + " ROWS ONLY;")
-        console.log(assets);
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('SortColumn', sql.VarChar, sortColumn)
+            .input('SortOrder', sql.VarChar, sortOrder)
+            .input('PageSize', sql.Int, pageSize)
+            .input('PageNumber', sql.Int, pageNumber)
+            .input('StatusBit', sql.Bit, statusBit)
+            .execute('dbProcViewAssets');
+
         return assets;
     }
     catch(error) {
@@ -21,11 +20,70 @@ const viewAll = async(itemsPerPage, page, orderBy, order) => {
     }
 }
 
-const viewAsset = async(UNITNUMBER) => {
+const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber) => {
     try {
-        let pool = await sql.connect(config);
-        let asset = pool.request().query("EXECUTE procViewAsset @unitnumber = '" + UNITNUMBER + "'");
-        return asset;
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('SortColumn', sql.VarChar, sortColumn)
+            .input('SortOrder', sql.VarChar, sortOrder)
+            .input('PageSize', sql.Int, pageSize)
+            .input('PageNumber', sql.Int, pageNumber)
+            .input('StatusBit', sql.Bit, statusBit)
+            .execute('dbProcViewTractors');
+
+        return assets;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber) => {
+    try {
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('SortColumn', sql.VarChar, sortColumn)
+            .input('SortOrder', sql.VarChar, sortOrder)
+            .input('PageSize', sql.Int, pageSize)
+            .input('PageNumber', sql.Int, pageNumber)
+            .input('StatusBit', sql.Bit, statusBit)
+            .execute('dbProcViewTrailers');
+
+        return assets;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+const viewInService = async(sortColumn, sortOrder, pageSize, pageNumber) => {
+    try {
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('SortColumn', sql.VarChar, sortColumn)
+            .input('SortOrder', sql.VarChar, sortOrder)
+            .input('PageSize', sql.Int, pageSize)
+            .input('PageNumber', sql.Int, pageNumber)
+            .execute('dbProcViewInService');
+
+        return assets;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+const viewOutOfService = async(sortColumn, sortOrder, pageSize, pageNumber) => {
+    try {
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('SortColumn', sql.VarChar, sortColumn)
+            .input('SortOrder', sql.VarChar, sortOrder)
+            .input('PageSize', sql.Int, pageSize)
+            .input('PageNumber', sql.Int, pageNumber)
+            .execute('dbProcViewOutOfService');
+
+        return assets;
     }
     catch(error) {
         console.log(error);
@@ -34,7 +92,6 @@ const viewAsset = async(UNITNUMBER) => {
 
 const sendInService = async(USER, UNITNUMBER) => {
     try {
-        let pool = await sql.connect(config);
         logRequest(USER, UNITNUMBER, true);
     }
     catch(error) {
@@ -44,41 +101,54 @@ const sendInService = async(USER, UNITNUMBER) => {
 
 const sendOutOfService = async(USER, UNITNUMBER, NOTES) => {
     try {
-        let pool = await sql.connect(config);
         logRequest(USER, UNITNUMBER, false);
-        pool.request().query("INSERT INTO Note(NOTE_ID, UNITNUMBER, NOTES) VALUES (NEWID(), '" + UNITNUMBER + "', '" + NOTES + "')");
-    }
-    catch(error) {
+
+        const pool = await sql.connect(config);
+        const result = await pool.request()
+            .input("unitNumber", sql.NVarChar, UNITNUMBER)
+            .input("notes", sql.NVarChar(sql.MAX), NOTES)
+            .query("INSERT INTO Note (NOTE_ID, UNITNUMBER, NOTES) VALUES (NEWID(), @unitNumber, @notes)");
+    
+        } catch(error) {
         console.log(error)
     }
 }
 
-const logRequest = async(USER, UNITNUMBER, newStatus) => {
-    try {
-        let pool = await sql.connect(config);
-        let newStatusBit = newStatus ? '1' : '0';
-        pool.request().query("INSERT INTO Request(REQUEST_ID, [USER], UNITNUMBER, STATUS) VALUES (NEWID(), '" + USER + "', '" + UNITNUMBER + "', " + newStatusBit + ")");
-    }
-    catch(error) {
-        console.log(error)
-    }
-}
+const logRequest = async (USER, UNITNUMBER, newStatus) => {
+    try {        
+        const pool = await sql.connect(config);
+        const result = await pool.request()
+            .input('USER', sql.NVarChar, USER)
+            .input('UNITNUMBER', sql.NVarChar, UNITNUMBER)
+            .input('STATUS', sql.Bit, newStatus)
+            .query('INSERT INTO Request (REQUEST_ID, [USER], UNITNUMBER, STATUS) VALUES (NEWID(), @USER, @UNITNUMBER, @STATUS)');
 
-const getAssetStatus = async(UNITNUMBER) => {
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAssetStatus = async(UNITNUMBER) => {
     try {
-        let pool = await sql.connect(config)
-        let status = pool.request().query("EXECUTE procGetAssetStatus @unitnumber = '" + UNITNUMBER + "'")
-        return status;
+        const pool = await sql.connect(config);
+        const request = pool.request()
+            .input('UNITNUMBER', sql.VarChar, UNITNUMBER);
+        
+        const result = await request.execute('procGetAssetStatus');
+        return result;
+    } catch(error) {
+        console.log(error);
     }
-    catch(error) {
-        console.log(error)
-    }
-}
+};
+
 
 module.exports= {
-    viewAll,
+    viewAssets,
+    viewTractors,
+    viewTrailers,
+    viewInService,
+    viewOutOfService,
     sendInService,
     sendOutOfService,
-    viewAsset,
     getAssetStatus
 }

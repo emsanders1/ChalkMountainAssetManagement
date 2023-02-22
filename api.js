@@ -10,10 +10,6 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/api', router);
 
-// https://www.telerik.com/blogs/step-by-step-create-node-js-rest-api-sql-server-database
-// https://app.swaggerhub.com/apis/BOLDINGMATTHEWD/chalk-mountain_asset_management/1.0.0#/assets/put_assets__assetId_
-// https://expressjs.com/en/api.html#router.route
-
 router.use((request, response, next) => {
   console.log('REST API Accessed...');
   next();
@@ -21,47 +17,154 @@ router.use((request, response, next) => {
  
  
 router.route('/assets').get((request, response) => {
-  if(request.query.assetId === undefined) {
-    // Default pagination settings
-    let itemsPerPage = request.query.itemsPerPage === undefined ? 50 : request.query.itemsPerPage;
-    let page = request.query.page === undefined ? 1 : request.query.page;
-    let orderBy = request.query.orderBy === undefined ? "UNITNUMBER" : request.query.orderBy;
-    let order = request.query.order === undefined ? "ASC" : request.query.order;
+    // Default Pagination Settings
+    let pageSize = parseInt(request.query.pageSize) || 50;
+    let pageNumber = parseInt(request.query.pageNumber) || 1;
+    let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+    let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+    let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
 
-    db.viewAll(itemsPerPage, page, orderBy, order).then((data) => {
+    db.viewAssets(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+      .then((data) => {
+        response.status(200).json(data.recordset);
+    }).catch((err) => {
+        console.error(err);
+        response.status(500).json({ error: 'Internal Server Error' });
+    });
+})
+
+router.route('/assets/tractors').get((request, response) => {
+  // Default Pagination Settings
+  let pageSize = parseInt(request.query.pageSize) || 50;
+  let pageNumber = parseInt(request.query.pageNumber) || 1;
+  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
+
+  db.viewTractors(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+    .then((data) => {
       response.status(200).json(data.recordset);
-    })
-  } else {
-    db.viewAsset(request.query.assetId).then((data) => {
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
+})
+
+router.route('/assets/trailers').get((request, response) => {
+  // Default Pagination Settings
+  let pageSize = parseInt(request.query.pageSize) || 50;
+  let pageNumber = parseInt(request.query.pageNumber) || 1;
+  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
+
+  db.viewTrailers(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+    .then((data) => {
       response.status(200).json(data.recordset);
-    })
-  }
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
+})
+
+router.route('/assets/inService').get((request, response) => {
+  // Default Pagination Settings
+  let pageSize = parseInt(request.query.pageSize) || 50;
+  let pageNumber = parseInt(request.query.pageNumber) || 1;
+  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+
+  db.viewInService(sortColumn, sortOrder, pageSize, pageNumber)
+    .then((data) => {
+      response.status(200).json(data.recordset);
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
+})
+
+router.route('/assets/outOfService').get((request, response) => {
+  // Default Pagination Settings
+  let pageSize = parseInt(request.query.pageSize) || 50;
+  let pageNumber = parseInt(request.query.pageNumber) || 1;
+  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+
+  db.viewOutOfService(sortColumn, sortOrder, pageSize, pageNumber)
+    .then((data) => {
+      response.status(200).json(data.recordset);
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
 })
 
 router.route('/assets/sendInService').post((request, response) => {
-  console.log("Send in service request received.")
-  db.getAssetStatus(request.query.assetId).then((data)  => {
-    if(data.recordset[0]['STATUS']) {
-      response.sendStatus(304);
-    } else {
-      db.sendInService(request.query.user, request.query.assetId);
-      response.sendStatus(200);
+  const user = request.query.user;
+  const assetId = request.query.assetId;
+
+  if (!user || !assetId) {
+    return response.status(400).send('User and asset ID are required.');
+  }
+
+  db.getAssetStatus(assetId).then((data)  => {
+    if (!data.recordset.length) {
+      return response.status(404).send('Asset not found.');
     }
-  })
-})
+
+    const assetStatus = data.recordset[0]['STATUS'];
+    console.log("api.js sendInService getAssetStatus" + assetStatus)
+
+    if (assetStatus) {
+      return response.status(304).send('Asset is already in service.');
+    }
+
+    db.sendInService(user, assetId).then(() => {
+      response.sendStatus(200);
+    }).catch((error) => {
+      console.error('Error sending asset in service:', error);
+      response.status(500).send('Error sending asset in service.');
+    });
+  }).catch((error) => {
+    console.error('Error getting asset status:', error);
+    response.status(500).send('Error getting asset status.');
+  });
+});
 
 router.route('/assets/sendOutOfService').post((request, response) => {
-  console.log("Send out of service request received.")
-  db.getAssetStatus(request.params.assetId).then((data)  => {
-    if(data.recordset[0]['STATUS']) {
-      db.sendOutOfService(request.query.user, request.query.assetId, request.query.notes);
-      response.sendStatus(200);
-    } else {
-      response.sendStatus(304);
+  const user = request.query.user;
+  const assetId = request.query.assetId;
+  const notes = request.query.notes;
+
+  if (!user || !assetId || !notes) {
+    return response.status(400).send('User, asset ID, and notes are required.');
+  }
+
+  db.getAssetStatus(assetId).then((data)  => {
+    if (!data.recordset.length) {
+      return response.status(404).send('Asset not found.');
     }
-  })
-})
-  
+
+    const assetStatus = data.recordset[0]['STATUS'];
+
+    if (!assetStatus) {
+      return response.status(304).send('Asset is already out of service.');
+    }
+
+    const cleanNotes = notes.replace(/[^a-zA-Z0-9 ,.\-_]/g, '');
+    console.log("Clean notes " + cleanNotes)
+
+    db.sendOutOfService(user, assetId, cleanNotes).then(() => {
+      response.sendStatus(200);
+    }).catch((error) => {
+      console.error('Error sending asset out of service:', error);
+      response.status(500).send('Error sending asset out of service.');
+    });
+  }).catch((error) => {
+    console.error('Error getting asset status:', error);
+    response.status(500).send('Error getting asset status.');
+  });
+});
   
 var port = process.env.PORT || 8090;
 app.listen(port);
