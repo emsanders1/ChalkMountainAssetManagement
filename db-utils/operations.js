@@ -56,40 +56,6 @@ const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber) => {
     }
 }
 
-const viewInService = async(sortColumn, sortOrder, pageSize, pageNumber) => {
-    try {
-        const pool = await sql.connect(config);
-        const assets = await pool.request()
-            .input('SortColumn', sql.VarChar, sortColumn)
-            .input('SortOrder', sql.VarChar, sortOrder)
-            .input('PageSize', sql.Int, pageSize)
-            .input('PageNumber', sql.Int, pageNumber)
-            .execute('dbProcViewInService');
-
-        return assets;
-    }
-    catch(error) {
-        console.log(error);
-    }
-}
-
-const viewOutOfService = async(sortColumn, sortOrder, pageSize, pageNumber) => {
-    try {
-        const pool = await sql.connect(config);
-        const assets = await pool.request()
-            .input('SortColumn', sql.VarChar, sortColumn)
-            .input('SortOrder', sql.VarChar, sortOrder)
-            .input('PageSize', sql.Int, pageSize)
-            .input('PageNumber', sql.Int, pageNumber)
-            .execute('dbProcViewOutOfService');
-
-        return assets;
-    }
-    catch(error) {
-        console.log(error);
-    }
-}
-
 const sendInService = async(USER, UNITNUMBER) => {
     try {
         logRequest(USER, UNITNUMBER, true);
@@ -146,8 +112,6 @@ module.exports= {
     viewAssets,
     viewTractors,
     viewTrailers,
-    viewInService,
-    viewOutOfService,
     sendInService,
     sendOutOfService,
     getAssetStatus
