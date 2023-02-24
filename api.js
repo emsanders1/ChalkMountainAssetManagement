@@ -67,21 +67,37 @@ router.route('/assets/trailers').get((request, response) => {
   });
 });
 
-router.route('/assets/inService').get((request, response) => {
-  // Default Pagination Settings
-  let pageSize = parseInt(request.query.pageSize) || 50;
-  let pageNumber = parseInt(request.query.pageNumber) || 1;
-  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
-  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+router.route('/assets/sendInService').post((request, response) => {
+  const user = request.query.user;
+  const assetId = request.query.assetId;
 
-  db.viewInService(sortColumn, sortOrder, pageSize, pageNumber)
-    .then((data) => {
-      response.status(200).json(data.recordset);
-  }).catch((err) => {
-      console.error(err);
-      response.status(500).json({ error: 'Internal Server Error' });
+  if (!user || !assetId) {
+    return response.status(400).send('User and asset ID are required.');
+  }
+
+  db.getAssetStatus(assetId).then((data)  => {
+    if (!data.recordset.length) {
+      return response.status(404).send('Asset not found.');
+    }
+
+    const assetStatus = data.recordset[0]['STATUS'];
+    console.log("api.js sendInService getAssetStatus" + assetStatus)
+
+    if (assetStatus) {
+      return response.status(304).send('Asset is already in service.');
+    }
+
+    db.sendInService(user, assetId).then(() => {
+      response.sendStatus(200);
+    }).catch((error) => {
+      console.error('Error sending asset in service:', error);
+      response.status(500).send('Error sending asset in service.');
+    });
+  }).catch((error) => {
+    console.error('Error getting asset status:', error);
+    response.status(500).send('Error getting asset status.');
   });
-})
+});
 
 router.route('/assets/sendOutOfService').post((request, response) => {
   const user = request.query.user;
