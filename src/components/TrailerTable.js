@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -12,7 +15,11 @@ const AssetTable = () => {
   useEffect(() => {
     const fetchData = async () => {
         try{
-            const response = await fetch(`http://localhost:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}`)
+            let url = `http://localhost:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+            if (statusBit != null){
+              url += `&statusBit=${statusBit}`;
+            }
+            const response = await fetch(url);
             const data = await response.json();
             setAssets(data);
         } catch (error) {
@@ -38,6 +45,13 @@ const AssetTable = () => {
     setSortOrder(isAscending ? 'DESC' : 'ASC');
   };
 
+  const renderSortArrow = (columnName) => {
+    if(columnName === sortColumn) {
+      return sortOrder === 'DESC' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />;
+    }
+    return null;
+  };
+
   const handleStatusBitChange = (event) => {
     setStatusBit(event.target.value);
   };
@@ -48,26 +62,61 @@ const AssetTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align='center'>
-                Type
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'TYPE')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Type</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('TYPE')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Asset
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'UNITNUMBER')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Asset</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('UNITNUMBER')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Location
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'LOCATION')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Location</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('LOCATION')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Status
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'STATUS')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Status</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('STATUS')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Date
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'MOST_RECENT_UPDATE')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Date</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('MOST_RECENT_UPDATE')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Employee
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'USER')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Employee</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('USER')}
+                </IconButton>
+                </div>
               </TableCell>
-              <TableCell align='center'>
-                Notes
+              <TableCell align='center' onClick={(event) => handleSortChange(event, 'NOTES')}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <span>Notes</span>
+                <IconButton size="small" style={{ marginLeft: '4px'}}>
+                  {renderSortArrow('NOTES')}
+                </IconButton>
+                </div>
               </TableCell>
               <TableCell align='center'>
                 Modify
@@ -105,7 +154,7 @@ const AssetTable = () => {
       </TableContainer>
       <TablePagination
         component="div"
-        count={1000} // set a large enough number so that the pagination shows up
+        count={1000} 
         page={pageNumber - 1}
         rowsPerPage={pageSize}
         rowsPerPageOptions={[5,10, 25, 50, 100]}
