@@ -137,3 +137,4 @@ router.route('/assets/sendOutOfService').post((request, response) => {
 var port = process.env.PORT || 8090;
 app.listen(port);
 console.log('REST API is runnning at ' + port);
+

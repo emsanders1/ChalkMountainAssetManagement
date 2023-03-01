@@ -20,28 +20,6 @@ tr:nth-child(odd){
   background-color: #f2f2f2;
 }
 
- #assetButton{
-  background: none!important;
-  border: none;
-  padding: 0!important;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
- }
-
-#statusButton{
-  background: none!important;
-  border: none;
-  padding: 0!important;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
-}
-#locationButton{
-  background: none!important;
-  border: none;
-  padding: 0!important;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
+TableCell {
+  align-items: center;
 }

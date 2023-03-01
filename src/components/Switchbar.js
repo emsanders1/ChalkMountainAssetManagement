@@ -5,109 +5,22 @@ import * as React from "react";
 import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import {useState} from "react";
+import Table from './AllTable';
 
 export default function Switchbar(){
-    function searchFunction() {
-        var input, filter, table, tr, td, i;
-        input = document.getElementById("myInput");
-        filter = input.value;
-        filter = filter.toUpperCase();
-        table = document.getElementById("myTable");
-        tr = table.getElementsByTagName("tr");
-      
-        for(i=0; i < tr.length; i++) {
-          var tds = tr[i].getElementsByTagName("td");
-          var flag = false;
-          for(var j=0; j < tds.length; j++){
-            var td = tds[j];
-            if (td.innerHTML.toUpperCase().indexOf(filter) > -1){
-              flag = true;
-            }
-          }
-          if(flag) {
-              tr[i].style.display = "";
-              flag = false;
-          }else {
-            if(tr[i].id != 'tableHeader'){
-                tr[i].style.display = "none";
-            }
-          }
-        }
+      function searchFunction() {
       }
-      function filterAllFunction(){
-        var filter, table, tr, td, i;
-        filter = "SERVICE";
-        table = document.getElementById("myTable");
-        tr = table.getElementsByTagName("tr");
       
-        for(i=0; i < tr.length; i++) {
-          var tds = tr[i].getElementsByTagName("td");
-          var flag = false;
-          for(var j=0; j < tds.length; j++){
-            var td = tds[j];
-            if (td.innerHTML.toUpperCase().indexOf(filter) > -1){
-              flag = true;
-            }
-          }
-          if(flag) {
-              tr[i].style.display = "";
-              flag = false;
-          }else {
-            if(tr[i].id != 'tableHeader'){
-                tr[i].style.display = "none";
-            }
-          }
-        }
-      }
+      // const [showTable, setShowTable] = useState(false);
+      // const filterAllFunction = () => {
+      //   setShowTable(!showTable);
+      // }
       function filterInFunction(){
-        var filter, table, tr, td, i;
-        filter = "IN-SERVICE";
-        table = document.getElementById("myTable");
-        tr = table.getElementsByTagName("tr");
-      
-        for(i=0; i < tr.length; i++) {
-          var tds = tr[i].getElementsByTagName("td");
-          var flag = false;
-          for(var j=0; j < tds.length; j++){
-            var td = tds[j];
-            if (td.innerHTML.toUpperCase().indexOf(filter) > -1){
-              flag = true;
-            }
-          }
-          if(flag) {
-              tr[i].style.display = "";
-              flag = false;
-          }else {
-            if(tr[i].id != 'tableHeader'){
-                tr[i].style.display = "none";
-            }
-          }
-        }
+        
       }
+
       function filterOutFunction(){
-        var filter, table, tr, td, i;
-        filter = "OUT-OF-SERVICE";
-        table = document.getElementById("myTable");
-        tr = table.getElementsByTagName("tr");
-      
-        for(i=0; i < tr.length; i++) {
-          var tds = tr[i].getElementsByTagName("td");
-          var flag = false;
-          for(var j=0; j < tds.length; j++){
-            var td = tds[j];
-            if (td.innerHTML.toUpperCase().indexOf(filter) > -1){
-              flag = true;
-            }
-          }
-          if(flag) {
-              tr[i].style.display = "";
-              flag = false;
-          }else {
-            if(tr[i].id != 'tableHeader'){
-                tr[i].style.display = "none";
-            }
-          }
-        }
+       
       }
 
     const Search = styled('div')(({ theme }) => ({
@@ -157,7 +70,9 @@ export default function Switchbar(){
     return(
         <div className="switchbar">
             <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
-                <Button onClick={filterAllFunction}>All</Button>
+                <Button>All</Button>
+                {/* onClick={filterAllFunction} */}
+                {/* {showTable && <Table />} */}
                 <Button onClick={filterInFunction}>In-Service</Button>
                 <Button onClick={filterOutFunction}>Out-of-Service</Button>
             </ButtonGroup>

@@ -1,4 +1,4 @@
-import SortableTable from "../components/Table"
+import Table from "../components/TractorTable"
 import Navbar from "../components/Navbar"
 import Switchbar from "../components/Switchbar"
 export default function Tractors(){
@@ -6,7 +6,7 @@ export default function Tractors(){
         <div className="Tractors">
             <Navbar/>
             <Switchbar/>
-            <SortableTable/>
+            <Table/>
         </div>
     )
 }

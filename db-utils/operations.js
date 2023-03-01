@@ -20,7 +20,7 @@ const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
     }
 }
 
-const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber) => {
+const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
     try {
         const pool = await sql.connect(config);
         const assets = await pool.request()
@@ -38,7 +38,7 @@ const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber) => {
     }
 }
 
-const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber) => {
+const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
     try {
         const pool = await sql.connect(config);
         const assets = await pool.request()
