@@ -2,7 +2,7 @@ const { user } = require('./config-env');
 const config = require('./config-env'),
       sql    = require('mssql');
 
-const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
+const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText) => {
     try {
         const pool = await sql.connect(config);
         const assets = await pool.request()
@@ -11,6 +11,7 @@ const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
             .input('PageSize', sql.Int, pageSize)
             .input('PageNumber', sql.Int, pageNumber)
             .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
             .execute('dbProcViewAssets');
 
         return assets;
@@ -20,7 +21,7 @@ const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
     }
 }
 
-const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
+const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText) => {
     try {
         const pool = await sql.connect(config);
         const assets = await pool.request()
@@ -29,6 +30,7 @@ const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
             .input('PageSize', sql.Int, pageSize)
             .input('PageNumber', sql.Int, pageNumber)
             .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
             .execute('dbProcViewTractors');
 
         return assets;
@@ -38,7 +40,7 @@ const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
     }
 }
 
-const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit) => {
+const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText) => {
     try {
         const pool = await sql.connect(config);
         const assets = await pool.request()
@@ -47,6 +49,7 @@ const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
             .input('PageSize', sql.Int, pageSize)
             .input('PageNumber', sql.Int, pageNumber)
             .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
             .execute('dbProcViewTrailers');
 
         return assets;

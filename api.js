@@ -22,9 +22,10 @@ router.route('/assets').get((request, response) => {
     let pageNumber = parseInt(request.query.pageNumber) || 1;
     let sortColumn = request.query.sortColumn || 'UNITNUMBER';
     let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
-    let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
+    let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;
+    let searchText = request.query.searchText || null;
 
-    db.viewAssets(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+    db.viewAssets(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
       .then((data) => {
         response.status(200).json(data.recordset);
     }).catch((err) => {
@@ -39,9 +40,10 @@ router.route('/assets/tractors').get((request, response) => {
   let pageNumber = parseInt(request.query.pageNumber) || 1;
   let sortColumn = request.query.sortColumn || 'UNITNUMBER';
   let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
-  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
+  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;
+  let searchText = request.query.searchText || null;
 
-  db.viewTractors(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+  db.viewTractors(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
     .then((data) => {
       response.status(200).json(data.recordset);
   }).catch((err) => {
@@ -56,9 +58,10 @@ router.route('/assets/trailers').get((request, response) => {
   let pageNumber = parseInt(request.query.pageNumber) || 1;
   let sortColumn = request.query.sortColumn || 'UNITNUMBER';
   let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
-  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;;
+  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;
+  let searchText = request.query.searchText || null;
 
-  db.viewTrailers(sortColumn, sortOrder, pageSize, pageNumber, statusBit)
+  db.viewTrailers(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
     .then((data) => {
       response.status(200).json(data.recordset);
   }).catch((err) => {
