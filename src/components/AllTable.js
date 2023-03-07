@@ -3,6 +3,12 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Table
 import IconButton from '@mui/material/IconButton';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import SearchIcon from "@mui/icons-material/Search";
+import {alpha, styled} from "@mui/material/styles";
+import InputBase from "@mui/material/InputBase";
+import {fetchData} from './AllTable';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -11,6 +17,8 @@ const AssetTable = () => {
   const [sortColumn, setSortColumn] = useState('UNITNUMBER');
   const [sortOrder, setSortOrder] = useState('ASC');
   const [statusBit, setStatusBit] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  // const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,6 +26,9 @@ const AssetTable = () => {
             let url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
+            }
+            if (searchText != ''){
+              url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
             const data = await response.json();
@@ -27,7 +38,7 @@ const AssetTable = () => {
         }
     };
     fetchData();
-  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit]);
+  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   const handlePageSizeChange = (event) => {
     console.log("Page size changed to:", event.target.value);
@@ -52,12 +63,97 @@ const AssetTable = () => {
     return null;
   };
 
-  const handleStatusBitChange = (event) => {
+  const filterInFunction = (event) => {
     setStatusBit(event.target.value);
+    setStatusBit(1);
   };
+
+  const filterOutFunction = (event) => {
+    setStatusBit(event.target.value);
+    setStatusBit(0);
+  };
+
+  const filterAllFunction = (event) => {
+    setStatusBit(event.target.value);
+    setStatusBit(null);
+  };
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.55),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.75),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(1),
+        width: 'auto',
+    },
+}));
+
+
+const handleSearch = (event) => {
+  setSearchText(event.target.value);
+};
+
+// const handleSearchInput = (event) => {
+//   setSearchInputValue(event.target.value);
+// };
+
+// const handleSearchBlur = () => {
+//   setSearchText(searchInputValue);
+// };
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        // transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '12ch',
+            '&:focus': {
+                width: '20ch',
+            },
+        },
+    },
+}));
+
 
   return (
     <>
+     <div className="switchbar">
+            <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
+                <Button onClick={filterAllFunction}>All</Button>
+                <Button onClick={filterInFunction}>In-Service</Button>
+                <Button onClick={filterOutFunction}>Out-of-Service</Button>
+            </ButtonGroup>
+            <Search>
+                <SearchIconWrapper>
+                    <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                   placeholder="Search…"
+                   inputProps={{ 'aria-label': 'search' }}
+                   onChange={handleSearch}
+                  //  onBlur={handleSearchBlur}
+                />
+            </Search>
+        </div>
       <TableContainer>
         <Table>
           <TableHead>

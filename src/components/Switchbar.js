@@ -5,16 +5,12 @@ import * as React from "react";
 import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import {useState} from "react";
-import Table from './AllTable';
+import {fetchData} from './AllTable';
 
 export default function Switchbar(){
       function searchFunction() {
       }
       
-      // const [showTable, setShowTable] = useState(false);
-      // const filterAllFunction = () => {
-      //   setShowTable(!showTable);
-      // }
       function filterInFunction(){
         
       }
