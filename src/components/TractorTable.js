@@ -3,6 +3,14 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Table
 import IconButton from '@mui/material/IconButton';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import SearchIcon from "@mui/icons-material/Search";
+import {alpha, styled} from "@mui/material/styles";
+import InputBase from "@mui/material/InputBase";
+import {fetchData} from './AllTable';
+import AssetModal from './Modal';
+import './Modal.css';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -11,6 +19,10 @@ const AssetTable = () => {
   const [sortColumn, setSortColumn] = useState('UNITNUMBER');
   const [sortOrder, setSortOrder] = useState('ASC');
   const [statusBit, setStatusBit] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,6 +30,9 @@ const AssetTable = () => {
             let url = `http://localhost:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
+            }
+            if (searchText != ''){
+              url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
             const data = await response.json();
@@ -27,7 +42,7 @@ const AssetTable = () => {
         }
     };
     fetchData();
-  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit]);
+  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   const handlePageSizeChange = (event) => {
     console.log("Page size changed to:", event.target.value);
@@ -52,12 +67,139 @@ const AssetTable = () => {
     return null;
   };
 
-  const handleStatusBitChange = (event) => {
+  const filterInFunction = (event) => {
     setStatusBit(event.target.value);
+    setStatusBit(1);
   };
+
+  const filterOutFunction = (event) => {
+    setStatusBit(event.target.value);
+    setStatusBit(0);
+  };
+
+  const filterAllFunction = (event) => {
+    setStatusBit(event.target.value);
+    setStatusBit(null);
+  };
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleOpenModal = (asset) => {
+    setSelectedAsset(asset);
+    handleModalOpen();
+  };
+
+  const handleInService = async () => {
+    try {
+      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedAsset),
+      });
+      const data = await response.json();
+      console.log(data);
+      setSelectedAsset(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleOutOfService = async (note) => {
+    try {
+      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores&notes=${note}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedAsset),
+      });
+      const data = await response.json();
+      console.log(data);
+      setSelectedAsset(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.55),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.75),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(1),
+        width: 'auto',
+    },
+}));
+
+
+const handleSearch = (event) => {
+  setSearchText(event.target.value);
+};
+
+// const handleSearchInput = (event) => {
+//   setSearchInputValue(event.target.value);
+// };
+
+// const handleSearchBlur = () => {
+//   setSearchText(searchInputValue);
+// };
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '12ch',
+            '&:focus': {
+                width: '20ch',
+            },
+        },
+    },
+}));
+
 
   return (
     <>
+     <div className="switchbar">
+            <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
+                <Button onClick={filterAllFunction}>All</Button>
+                <Button onClick={filterInFunction}>In-Service</Button>
+                <Button onClick={filterOutFunction}>Out-of-Service</Button>
+            </ButtonGroup>
+            <Search>
+                <SearchIconWrapper>
+                    <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                   placeholder="Search…"
+                   inputProps={{ 'aria-label': 'search' }}
+                   onChange={handleSearch}
+                />
+            </Search>
+        </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -147,11 +289,25 @@ const AssetTable = () => {
                 <TableCell align='center'>
                   {asset.NOTES}
                 </TableCell>
+                <TableCell align='center'>
+                  <button onClick={() => handleOpenModal(asset)}>
+                    Modify
+                  </button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      {selectedAsset && (
+        <AssetModal id="asset-modal"
+          isOpen={isModalOpen}
+          selectedAsset={selectedAsset}
+          handleInService={handleInService}
+          handleOutOfService={handleOutOfService}
+          handleClose={() => setSelectedAsset(null)}
+        />
+      )}
       <TablePagination
         component="div"
         count={1000} 
@@ -166,3 +322,4 @@ const AssetTable = () => {
 };
 
 export default AssetTable;
+

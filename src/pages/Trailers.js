@@ -5,7 +5,7 @@ export default function Tractors(){
     return(
         <div className="Tractors">
             <Navbar/>
-            <Switchbar/>
+             {/* <Switchbar/> */}
             <Table/>
         </div>
     )

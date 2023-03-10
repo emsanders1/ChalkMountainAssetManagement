@@ -9,6 +9,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import {fetchData} from './AllTable';
+import AssetModal from './Modal';
+import './Modal.css';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -18,6 +20,8 @@ const AssetTable = () => {
   const [sortOrder, setSortOrder] = useState('ASC');
   const [statusBit, setStatusBit] = useState(null);
   const [searchText, setSearchText] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
@@ -78,6 +82,48 @@ const AssetTable = () => {
     setStatusBit(null);
   };
 
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleOpenModal = (asset) => {
+    setSelectedAsset(asset);
+    handleModalOpen();
+  };
+
+  const handleInService = async () => {
+    try {
+      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedAsset),
+      });
+      const data = await response.json();
+      console.log(data);
+      setSelectedAsset(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleOutOfService = async (note) => {
+    try {
+      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores&notes=${note}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedAsset),
+      });
+      const data = await response.json();
+      console.log(data);
+      setSelectedAsset(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -122,7 +168,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        // transition: theme.transitions.create('width'),
+        transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
             width: '12ch',
@@ -150,7 +196,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
                    placeholder="Search…"
                    inputProps={{ 'aria-label': 'search' }}
                    onChange={handleSearch}
-                  //  onBlur={handleSearchBlur}
                 />
             </Search>
         </div>
@@ -243,11 +288,25 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
                 <TableCell align='center'>
                   {asset.NOTES}
                 </TableCell>
+                <TableCell align='center'>
+                  <button onClick={() => handleOpenModal(asset)}>
+                    Modify
+                  </button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      {selectedAsset && (
+        <AssetModal id="asset-modal"
+          isOpen={isModalOpen}
+          selectedAsset={selectedAsset}
+          handleInService={handleInService}
+          handleOutOfService={handleOutOfService}
+          handleClose={() => setSelectedAsset(null)}
+        />
+      )}
       <TablePagination
         component="div"
         count={1000} 
