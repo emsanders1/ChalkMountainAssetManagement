@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+// import { createLdapClientAndConnect } from "../auth/ldap-authentication-client";
 
 import "./Login.css";
 
@@ -26,10 +27,13 @@ export default function Login() {
   };
 
   const handleSubmit = (event) => {
+
     //Prevent page reload
     event.preventDefault();
 
     var { uname, pass } = document.forms[0];
+    // createLdapClientAndConnect(uname, pass);
+
 
     // Find user login info
     const userData = database.find((user) => user.username === uname.value);

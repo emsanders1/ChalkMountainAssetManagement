@@ -2,6 +2,7 @@ var  db = require('./db-utils/operations');
 var  express = require('express');
 var  bodyParser = require('body-parser');
 var  cors = require('cors');
+const ldap = require('ldapjs')
 var  app = express();
 var  router = express.Router();
 
@@ -134,6 +135,61 @@ router.route('/assets/sendOutOfService').post((request, response) => {
   }).catch((error) => {
     console.error('Error getting asset status:', error);
     response.status(500).send('Error getting asset status.');
+  });
+});
+
+router.route('/ldap').post((req, res) => {
+  const client = ldap.createClient({
+    //url: `ldap://${req.body.host}:${req.body.port}`,
+    url: 'ldap://172.16.50.3:389',
+    timeout: 100000,
+    idleTimeout: 300000,
+    maxWaitTime: req.body.maxWait,
+    maxConnections: req.body.maxActive,
+    bindDN: req.body.adminDn,
+    bindCredentials: req.body.adminPassword,
+    tlsOptions: {},
+    reconnect: true,
+  });
+
+  client.bind(req.body.adminDn, req.body.adminPassword, (error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send({ message: 'Failed to connect to LDAP server',  error});
+    } else {
+      console.log('Successfully binded to the server!')
+
+      const opts = {
+        filter: '(objectClass=group)',
+        scope: 'sub',
+        attributes: ['CN'],
+      };
+      var base = 'dc=ManBearPig,dc=com';
+      var search_options = {
+          scope: 'sub',
+      };
+
+      client.search('OU=Groups,DC=ManBearPig,DC=com', opts, (error, res) => {
+        res.on('searchRequest', (searchRequest) => {
+          console.log('searchRequest: ', searchRequest.messageId);
+        });
+        res.on('searchEntry', (entry) => {
+          console.log('entry: ' + JSON.stringify(entry.pojo));
+        });
+        res.on('searchReference', (referral) => {
+          console.log('referral: ' + referral.uris.join());
+        });
+        res.on('error', (err) => {
+          console.error('error: ' + err.message);
+        });
+        res.on('end', (result) => {
+          console.log('status: ' + result.status);
+          client.unbind(() => {
+            console.log('unbinded')
+          });
+        });
+      });    
+    }
   });
 });
   
