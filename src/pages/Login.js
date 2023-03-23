@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-// import { createLdapClientAndConnect } from "../auth/ldap-authentication-client";
+import { createLdapClientAndConnect } from "../auth/ldap-authentication-client";
 
 import "./Login.css";
 
@@ -32,7 +32,7 @@ export default function Login() {
     event.preventDefault();
 
     var { uname, pass } = document.forms[0];
-    // createLdapClientAndConnect(uname, pass);
+    createLdapClientAndConnect(uname.value, pass.value);
 
 
     // Find user login info
@@ -73,7 +73,7 @@ export default function Login() {
           {renderErrorMessage("pass")}
         </div>
         <div className="button-container">
-          <input type="submit" />
+          <input value="Submit" type="submit" />
         </div>
       </form>
     </div>

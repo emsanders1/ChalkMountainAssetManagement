@@ -29,7 +29,3 @@ export async function createLdapClientAndConnect(username, password) {
     }
   }
 }
-
-createLdapClientAndConnect()
-  .then(data => console.log(data + '*******************************'))
-  .catch(error => console.error(error));
