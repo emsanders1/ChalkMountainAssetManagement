@@ -12,6 +12,8 @@ import {fetchData} from './AllTable';
 import AssetModal from './Modal';
 import './Modal.css';
 import { fontFamily } from '@mui/system';
+import { isDisabled } from '@testing-library/user-event/dist/utils';
+import { LegendToggleOutlined } from '@mui/icons-material';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -36,7 +38,32 @@ const AssetTable = () => {
               url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
-            const data = await response.json();
+            var data = await response.json();
+
+            const response1 = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+            const data1 = await response1.json();
+
+            data.forEach((obj) => {          
+                let buttonEval = false;
+          
+                if(data1.includes('ShopAdmin')) {
+                  console.log('Includes ShopAdmin');
+                  buttonEval = false;
+                } else if(data1.includes('YardCoordinator')) {
+                  console.log('Includes YardCoordinator');
+                  buttonEval = !obj.STATUS;
+                } else if(data1.includes('Mechanic')) {
+                  console.log('Includes Mechanic');
+                  buttonEval = obj.STATUS;
+                } else {
+                  buttonEval = true;
+                }
+          
+                // console.log("Button disabled? " + buttonEval);
+              obj.modifiable = buttonEval;
+            });
+
+            console.log(data)
             setAssets(data);
         } catch (error) {
             console.error(error);
@@ -98,7 +125,16 @@ const AssetTable = () => {
 
   const handleInService = async () => {
     try {
-      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores`, {
+      var ldapUsername = ""
+      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
+      const data1 = await response1.json()
+      if(data1 ===  "Signed Out User") {
+        ldapUsername = "NULL"
+       } else {
+        ldapUsername = data1
+       }
+
+      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
@@ -113,7 +149,16 @@ const AssetTable = () => {
 
   const handleOutOfService = async (note) => {
     try {
-      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores&notes=${note}`, {
+      var ldapUsername = ""
+      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
+      const data1 = await response1.json()
+      if(data1 ===  "Signed Out User") {
+        ldapUsername = "NULL"
+       } else {
+        ldapUsername = data1
+       }
+
+      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}&notes=${note}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
@@ -134,6 +179,36 @@ const AssetTable = () => {
     // setAssets(data);
     setSearchText(event.target.value);
   };
+
+  const isButtonDisabled = async (assetStatus) => {
+    try {
+      const response = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+      const data = await response.json();
+      console.log(data);
+
+      let buttonEval = false;
+
+      if(data.includes('ShopAdmin')) {
+        console.log('Includes ShopAdmin');
+        buttonEval = false;
+      } else if(data.includes('YardCoordinator')) {
+        console.log('Includes YardCoordinator');
+        console.log(!assetStatus);
+        buttonEval = !assetStatus;
+      } else if(data.includes('Mechanic')) {
+        console.log('Includes Mechanic');
+        buttonEval = assetStatus;
+      } else {
+        buttonEval = true;
+      }
+
+      console.log("Button disabled? " + buttonEval)
+      return buttonEval;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+    
 
   return (
     <>
@@ -237,7 +312,7 @@ const AssetTable = () => {
                   {asset.NOTES}
                 </TableCell>
                 <TableCell align='center'>
-                  <button onClick={() => handleOpenModal(asset)}>
+                  <button disabled={asset.modifiable} onClick={() => handleOpenModal(asset)}>
                     Modify
                   </button>
                 </TableCell>

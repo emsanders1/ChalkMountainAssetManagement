@@ -2,7 +2,8 @@ var  db = require('./db-utils/operations');
 var  express = require('express');
 var  bodyParser = require('body-parser');
 var  cors = require('cors');
-const ldap = require('ldapjs')
+const ldap = require('ldapjs');
+const { RoundaboutLeftRounded, RouterRounded } = require('@mui/icons-material');
 var  app = express();
 var  router = express.Router();
 
@@ -123,7 +124,7 @@ router.route('/assets/sendOutOfService').post((request, response) => {
       return response.status(304).send('Asset is already out of service.');
     }
 
-    const cleanNotes = notes.replace(/[^a-zA-Z0-9 ,.\-_]/g, '');
+    const cleanNotes = notes.replace(/[^a-zA-Z0-9 ,.;_]/g, '');
     console.log("Clean notes " + cleanNotes)
 
     db.sendOutOfService(user, assetId, cleanNotes).then(() => {
@@ -138,8 +139,13 @@ router.route('/assets/sendOutOfService').post((request, response) => {
   });
 });
 
+var client = null;
+var groups = [];
+var username = "Signed Out User";
+
 router.route('/ldap').post((req, res) => {
-  const client = ldap.createClient({
+  console.log("LDAP endpoint called!")
+  client = ldap.createClient({
     //url: `ldap://${req.body.host}:${req.body.port}`,
     url: 'ldap://172.16.50.3:389',
     timeout: 100000,
@@ -158,6 +164,9 @@ router.route('/ldap').post((req, res) => {
       return res.status(500).send({ message: 'Failed to connect to LDAP server',  error});
     } else {
       console.log('Successfully binded to the server!')
+      res.status(200).json();
+
+      username = req.body.adminDn.split(',')[0].substr(3);
 
       const opts = {
         filter: '(objectClass=group)',
@@ -169,31 +178,72 @@ router.route('/ldap').post((req, res) => {
           scope: 'sub',
       };
 
-      client.search('OU=Groups,DC=ManBearPig,DC=com', opts, (error, res) => {
-        res.on('searchRequest', (searchRequest) => {
-          console.log('searchRequest: ', searchRequest.messageId);
-        });
-        res.on('searchEntry', (entry) => {
-          console.log('entry: ' + JSON.stringify(entry.pojo));
-        });
-        res.on('searchReference', (referral) => {
-          console.log('referral: ' + referral.uris.join());
-        });
-        res.on('error', (err) => {
-          console.error('error: ' + err.message);
-        });
-        res.on('end', (result) => {
-          console.log('status: ' + result.status);
-          client.unbind(() => {
-            console.log('unbinded')
+      client.search(req.body.adminDn, {
+        scope: 'base',
+        attributes: ['memberOf']
+      }, (err, ldapResult) => {
+        groups = [];
+    
+        ldapResult.on('searchEntry', (entry) => {
+          groups = entry.object.memberOf.map((group) => {
+            const groupDn = group.split(',')[0];
+            const groupName = groupDn.split('=')[1];
+            return groupName;
           });
         });
-      });    
+    
+        ldapResult.on('end', () => {
+          console.log('Groups:', groups);
+        });      
+      });
+
+      // client.search('OU=Groups,DC=ManBearPig,DC=com', opts, logCallback);   
     }
   });
 });
+
+router.route('/ldap/getGroups').get((req, res) => {
+  res.status(200).json(groups);
+});
+
+router.route('/ldap/logout').get((req, res) => {
+  username = "Signed Out User";
+  groups = [];
+  client.unbind(() => {
+    res.status(200).json();
+  })
+});
+
+router.route('/ldap/getName').get((req, res) => {
+  res.status(200).json(username);
+});
+
+function logCallback(err,res) {
+  if(!res) {
+      console.log(err)
+      return
+  }
   
+  res.on('searchRequest', (searchRequest) => {
+      console.log('searchRequest: ', searchRequest.messageID);
+  });
+  res.on('searchEntry', (entry) => {
+      console.log('entry: ' + JSON.stringify(entry.object));
+  });
+  res.on('searchReference', (referral) => {
+      console.log('referral: ' + referral.uris.join());
+  });
+  res.on('error', (err) => {
+      console.error('error: ' + err.message);
+  });
+  res.on('end', (result) => {
+      console.log('status: ' + result?.status);
+  });
+}
+
+exports.username = username;
+exports.groups = groups;
+
 var port = process.env.PORT || 8090;
 app.listen(port);
 console.log('REST API is runnning at ' + port);
-
