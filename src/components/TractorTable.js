@@ -27,7 +27,7 @@ const AssetTable = () => {
   useEffect(() => {
     const fetchData = async () => {
         try{
-            let url = `http://localhost:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+            let url = `http://tcu-dev02:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
             }
@@ -97,7 +97,7 @@ const AssetTable = () => {
 
   const handleInService = async () => {
     try {
-      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores`, {
+      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
@@ -112,7 +112,7 @@ const AssetTable = () => {
 
   const handleOutOfService = async (note) => {
     try {
-      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores&notes=${note}`, {
+      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=JFlores&notes=${note}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
