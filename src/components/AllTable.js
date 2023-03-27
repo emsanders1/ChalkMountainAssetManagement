@@ -30,7 +30,7 @@ const AssetTable = () => {
   useEffect(() => {
     const fetchData = async () => {
         try{
-            let url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+            let url = `http://tcu-dev02:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
             }
@@ -40,7 +40,7 @@ const AssetTable = () => {
             const response = await fetch(url);
             var data = await response.json();
 
-            const response1 = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+            const response1 = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
             const data1 = await response1.json();
 
             data.forEach((obj) => {          
@@ -126,7 +126,7 @@ const AssetTable = () => {
   const handleInService = async () => {
     try {
       var ldapUsername = ""
-      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
+      const response1 = await fetch('http://tcu-dev02:8090/api/ldap/getName');
       const data1 = await response1.json()
       if(data1 ===  "Signed Out User") {
         ldapUsername = "NULL"
@@ -134,7 +134,7 @@ const AssetTable = () => {
         ldapUsername = data1
        }
 
-      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}`, {
+      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
@@ -150,7 +150,7 @@ const AssetTable = () => {
   const handleOutOfService = async (note) => {
     try {
       var ldapUsername = ""
-      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
+      const response1 = await fetch('http://tcu-dev02:8090/api/ldap/getName');
       const data1 = await response1.json()
       if(data1 ===  "Signed Out User") {
         ldapUsername = "NULL"
@@ -158,7 +158,7 @@ const AssetTable = () => {
         ldapUsername = data1
        }
 
-      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}&notes=${note}`, {
+      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}&notes=${note}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedAsset),
@@ -173,7 +173,7 @@ const AssetTable = () => {
 
   const handleSearch = async (event) => {
     // event.preventDefault();
-    // const response = await fetch(`http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}&searchText=${searchText}`);
+    // const response = await fetch(`http://tcu-dev02:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}&searchText=${searchText}`);
     // const data = await response.json();
     // console.log('search text:', searchText);
     // setAssets(data);
@@ -182,7 +182,7 @@ const AssetTable = () => {
 
   const isButtonDisabled = async (assetStatus) => {
     try {
-      const response = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+      const response = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
       const data = await response.json();
       console.log(data);
 

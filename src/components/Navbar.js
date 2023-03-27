@@ -7,7 +7,7 @@ export default function Navbar() {
     useEffect(() => {
         async function fetchUserName() {
         try {
-            const response = await axios.get('http://localhost:8090/api/ldap/getName');
+            const response = await axios.get('http://tcu-dev02:8090/api/ldap/getName');
             if(response.data ===  "Signed Out User") {
                 setUserName('')
             } else {
@@ -22,7 +22,7 @@ export default function Navbar() {
 
     const signout = async () => {
         try {
-            await axios.get('http://localhost:8090/api/ldap/logout');
+            await axios.get('http://tcu-dev02:8090/api/ldap/logout');
         } catch (error) {
             console.error(error);
         }
