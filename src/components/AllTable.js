@@ -40,30 +40,25 @@ const AssetTable = () => {
             const response = await fetch(url);
             var data = await response.json();
 
-            const response1 = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
-            const data1 = await response1.json();
+            const groupResponse = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
+            const groupData = await groupResponse.json();
 
             data.forEach((obj) => {          
                 let buttonEval = false;
           
-                if(data1.includes('ShopAdmin')) {
-                  console.log('Includes ShopAdmin');
+                if(groupData.includes('ShopAdmin')) {
                   buttonEval = false;
-                } else if(data1.includes('YardCoordinator')) {
-                  console.log('Includes YardCoordinator');
+                } else if(groupData.includes('YardCoordinator')) {
                   buttonEval = !obj.STATUS;
-                } else if(data1.includes('Mechanic')) {
-                  console.log('Includes Mechanic');
+                } else if(groupData.includes('Mechanic')) {
                   buttonEval = obj.STATUS;
                 } else {
                   buttonEval = true;
                 }
           
-                // console.log("Button disabled? " + buttonEval);
               obj.modifiable = buttonEval;
             });
 
-            console.log(data)
             setAssets(data);
         } catch (error) {
             console.error(error);
@@ -179,36 +174,6 @@ const AssetTable = () => {
     // setAssets(data);
     setSearchText(event.target.value);
   };
-
-  const isButtonDisabled = async (assetStatus) => {
-    try {
-      const response = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
-      const data = await response.json();
-      console.log(data);
-
-      let buttonEval = false;
-
-      if(data.includes('ShopAdmin')) {
-        console.log('Includes ShopAdmin');
-        buttonEval = false;
-      } else if(data.includes('YardCoordinator')) {
-        console.log('Includes YardCoordinator');
-        console.log(!assetStatus);
-        buttonEval = !assetStatus;
-      } else if(data.includes('Mechanic')) {
-        console.log('Includes Mechanic');
-        buttonEval = assetStatus;
-      } else {
-        buttonEval = true;
-      }
-
-      console.log("Button disabled? " + buttonEval)
-      return buttonEval;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-    
 
   return (
     <>

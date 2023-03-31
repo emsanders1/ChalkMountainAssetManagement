@@ -1,5 +1,5 @@
 import axios from 'axios'
-const BASE_URL = 'http://tcu-dev02:8090/api/ldap';
+const BASE_URL = 'http://localhost:8090/api/ldap';
 
 export async function createLdapClientAndConnect(username, password) {
   const endpoint = `${BASE_URL}`;

@@ -7,7 +7,7 @@ export default function Navbar() {
     useEffect(() => {
         async function fetchUserName() {
         try {
-            const response = await axios.get('http://tcu-dev02:8090/api/ldap/getName');
+            const response = await axios.get('http://localhost:8090/api/ldap/getName');
             if(response.data ===  "Signed Out User") {
                 setUserName('')
             } else {
@@ -22,29 +22,32 @@ export default function Navbar() {
 
     const signout = async () => {
         try {
-            await axios.get('http://tcu-dev02:8090/api/ldap/logout');
+            await fetch('http://localhost:8090/api/ldap/logout');
         } catch (error) {
             console.error(error);
         }
+        setTimeout(() => {
+            window.location.href = "http://localhost:3000/login";
+        }, 600); // wait for half a second before redirecting
     }
+     
 
     return (
         <nav className="nav">
-                <ul className="pages">
-                    <li>
+            <ul className="pages">
+                <li>
                     <a href="/home">Home</a>
-                    </li>
-                    <li>
+                </li>
+                <li>
                     <a href="/tractors">Tractors</a> 
-                    </li> 
-                    <li>
+                </li> 
+                <li>
                     <a href="/trailers">Trailers</a>
-                    </li>
-                </ul>
-                <a href="/" className="site-title"> Chalk Mountain Services Asset Management</a>
-                <p className="nav-welcome">Welcome{userName}!</p>
-                <a href="/login" className="logout"> Logout</a>
-
+                </li>
+            </ul>
+            <a href="/" className="site-title"> Chalk Mountain Services Asset Management</a>
+            <p className="nav-welcome">Welcome{userName}!</p>
+            <button onClick={signout} className="logout"> Logout</button>
         </nav>
     )
 }

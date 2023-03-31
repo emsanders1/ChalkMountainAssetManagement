@@ -59,6 +59,19 @@ const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
     }
 }
 
+const getEquipmentCount = async() => {
+    try {
+        const pool = await sql.connect(config);
+        const count = await pool.request()
+            .execute('dbProcGetEquipmentCount');
+
+        return count;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
 const sendInService = async(USER, UNITNUMBER) => {
     try {
         logRequest(USER, UNITNUMBER, true);
@@ -115,6 +128,7 @@ module.exports= {
     viewAssets,
     viewTractors,
     viewTrailers,
+    getEquipmentCount,
     sendInService,
     sendOutOfService,
     getAssetStatus

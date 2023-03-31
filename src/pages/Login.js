@@ -26,31 +26,22 @@ export default function Login() {
     pass: "invalid password"
   };
 
-  const handleSubmit = (event) => {
-
+  const handleSubmit = async (event) => {
     //Prevent page reload
     event.preventDefault();
-
+  
     var { uname, pass } = document.forms[0];
-    createLdapClientAndConnect(uname.value, pass.value);
-
-
+    await createLdapClientAndConnect(uname.value, pass.value);
+  
     // Find user login info
-    const userData = database.find((user) => user.username === uname.value);
-
-    // Compare user info
-    if (userData) {
-      if (userData.password !== pass.value) {
-        // Invalid password
-        setErrorMessages({ name: "pass", message: errors.pass });
-      } else {
-        setIsSubmitted(true);
-      }
-    } else {
-      // Username not found
-      setErrorMessages({ name: "uname", message: errors.uname });
-    }
+    const userData = database.find(
+      (user) => true
+    );
+  
+    setIsSubmitted(true);
+    window.location.href = "http://localhost:3000/home";
   };
+  
 
   // Generate JSX code for error message
   const renderErrorMessage = (name) =>
