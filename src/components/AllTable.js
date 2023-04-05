@@ -5,15 +5,9 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import SearchIcon from "@mui/icons-material/Search";
-import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import {fetchData} from './AllTable';
 import AssetModal from './Modal';
 import './Modal.css';
-import { fontFamily } from '@mui/system';
-import { isDisabled } from '@testing-library/user-event/dist/utils';
-import { LegendToggleOutlined } from '@mui/icons-material';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
@@ -34,7 +28,7 @@ const AssetTable = () => {
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
             }
-            if (searchText != ''){
+            if (searchText !== ''){
               url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
@@ -109,9 +103,9 @@ const AssetTable = () => {
     setIsModalOpen(true);
   };
   
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   setIsModalOpen(false);
+  // };
 
   const handleOpenModal = (asset) => {
     setSelectedAsset(asset);
@@ -178,7 +172,7 @@ const AssetTable = () => {
   return (
     <>
      <div className="switchbar">
-            <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
+            <ButtonGroup variant="contained" color="error" className="switch" >
                 <Button onClick={filterAllFunction}>All</Button>
                 <Button onClick={filterInFunction}>In-Service</Button>
                 <Button onClick={filterOutFunction}>Out-of-Service</Button>
@@ -303,6 +297,7 @@ const AssetTable = () => {
         rowsPerPageOptions={[5,10, 25, 50, 100]}
         onPageChange={handlePageNumberChange}
         onRowsPerPageChange={handlePageSizeChange}
+        className="pagination"
       />
     </>
   );
