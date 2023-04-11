@@ -6,6 +6,7 @@
   align-items: center;
   padding-bottom: 2rem;
   font-weight: bold;
+
 }
 
 .full-title {
@@ -69,7 +70,7 @@
     width: 100%;
     background-color: #c4342c;
     box-sizing: border-box;
-    border: 1px solid grey;
+    border: 1px solid black;
 
   }
 
@@ -109,11 +110,14 @@
 
   .nomenu{
     display: none;
+
   }
 
   .close-menu{
-      position: absolute;
-      
+    position: fixed;
+    margin-left: 10rem;
+    margin-bottom: 6rem;
+    
   }
 }
 
@@ -158,5 +162,10 @@
     gap: 5rem;
     padding-bottom: 2rem;
     font-weight: bold;
+  }
+
+  .nav{
+    margin-left: 4rem;
+    margin-right: 4rem;
   }
 }
