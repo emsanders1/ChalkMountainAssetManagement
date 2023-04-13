@@ -79,11 +79,10 @@ export default function Navbar() {
                         <a href="/trailers">Trailers</a>
                     </li>
                 </ul>
-                <a href="/" className="full-title">CMS Asset Management</a>
+                <a href="/" className="full-title">Chalk Mountain Services Asset Management</a>
                 <p className="nav-welcome">Welcome{userName}!</p>
                 <button onClick={signout} className="logout"> Logout</button>
             </div>
-
         </nav>        
     )
 }

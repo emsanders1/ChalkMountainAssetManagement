@@ -77,8 +77,6 @@ export default function Login() {
         <div className="title">Sign In</div>
         {isSubmitted ? <div>User is successfully logged in</div> : renderForm}
       </div>
-      <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-
     </div>
   );
 }

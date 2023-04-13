@@ -65,6 +65,9 @@ TableCell {
     gap: 2rem;
   }
 
+  .pagination {
+    color: blue;
+  }
 }
 
 
