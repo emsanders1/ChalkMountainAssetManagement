@@ -1,9 +1,3 @@
-.tableSection{
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    align-content: center;   
-}
 table {
     border: 2px solid black;
     width: 800px;
@@ -22,4 +16,56 @@ tr:nth-child(odd){
 
 TableCell {
   align-items: center;
+}
+
+.switchbar{
+  gap: 28rem;
+  display: flex;
+  padding-bottom: 1rem;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  
+}
+
+@media only screen and (max-width: 767px) {
+
+ /* For mobile devices */
+@media screen and (max-width: 480px) {
+  /* Make the table responsive */
+  table {
+    width: 200rem;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  
+  /* Display table data */
+  td {
+    display: block;
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+  }
+  
+  td:before {
+    position: absolute;
+    left: 6px;
+    content: attr(data-label);
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  /* Make the switchbar responsive */
+  .switchbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+  }
+
+}
+
+
 }

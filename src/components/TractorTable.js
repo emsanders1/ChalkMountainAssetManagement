@@ -5,10 +5,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import SearchIcon from "@mui/icons-material/Search";
-import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import {fetchData} from './AllTable';
 import AssetModal from './Modal';
 import './Modal.css';
 
@@ -27,15 +24,15 @@ const AssetTable = () => {
   useEffect(() => {
     const fetchData = async () => {
         try{
-            let url = `http://localhost:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+            let url = `http://tcu-dev02:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
             }
-            if (searchText != ''){
+            if (searchText !== ''){
               url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
-            const data = await response.json();
+            var data = await response.json();
 
             const groupResponse = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
             const groupData = await groupResponse.json();
@@ -106,9 +103,9 @@ const AssetTable = () => {
     setIsModalOpen(true);
   };
   
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   setIsModalOpen(false);
+  // };
 
   const handleOpenModal = (asset) => {
     setSelectedAsset(asset);
@@ -163,80 +160,26 @@ const AssetTable = () => {
     }
   };
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.55),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.75),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
-
-
-const handleSearch = (event) => {
-  setSearchText(event.target.value);
-};
-
-// const handleSearchInput = (event) => {
-//   setSearchInputValue(event.target.value);
-// };
-
-// const handleSearchBlur = () => {
-//   setSearchText(searchInputValue);
-// };
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
-
+  const handleSearch = async (event) => {
+    // event.preventDefault();
+    // const response = await fetch(`http://tcu-dev02:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}&searchText=${searchText}`);
+    // const data = await response.json();
+    // console.log('search text:', searchText);
+    // setAssets(data);
+    setSearchText(event.target.value);
+  };
 
   return (
     <>
      <div className="switchbar">
-            <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
+            <ButtonGroup variant="contained" color="error" className="switch" >
                 <Button onClick={filterAllFunction}>All</Button>
                 <Button onClick={filterInFunction}>In-Service</Button>
                 <Button onClick={filterOutFunction}>Out-of-Service</Button>
             </ButtonGroup>
-            <Search>
-                <SearchIconWrapper>
-                    <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                   placeholder="Search…"
-                   inputProps={{ 'aria-label': 'search' }}
-                   onChange={handleSearch}
-                />
-            </Search>
+            <form id="search-form" >
+                <InputBase style={{ backgroundColor: 'white', fontFamily: 'fantasy'}} placeholder="Search..." onChange={handleSearch}/>
+            </form>
         </div>
       <TableContainer>
         <Table>
@@ -354,10 +297,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         rowsPerPageOptions={[5,10, 25, 50, 100]}
         onPageChange={handlePageNumberChange}
         onRowsPerPageChange={handlePageSizeChange}
+        className="pagination"
       />
     </>
   );
 };
 
 export default AssetTable;
+
 

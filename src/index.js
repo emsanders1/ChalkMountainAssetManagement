@@ -4,7 +4,6 @@ import './index.css';
 import './App.css';
 import './components/Navbar.css';
 import './components/Table.css';
-import './components/Switchbar.css';
 import './pages/Login.css';
 import './pages/Popup.css'
 import App from './App';

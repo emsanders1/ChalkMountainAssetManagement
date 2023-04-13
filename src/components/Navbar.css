@@ -1,4 +1,159 @@
-.nav{
+.nav {
+  background-color: #c4342c;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 2rem;
+  font-weight: bold;
+
+}
+
+.full-title {
+  font-size: 2rem;
+  text-align: center;
+  text-decoration: none;
+  font-family: arial;
+}
+
+.short-title {
+  display: none;
+}
+
+.nav-welcome {
+  color: black;
+}
+
+.pages {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav a {
+  color: inherit;
+}
+
+.menu{
+  display: none;
+}
+
+.menu-toggle{
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+  .menu-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+
+  .menu-icon {
+    font-size: 1.5rem;
+    color: white;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #c4342c;
+    box-sizing: border-box;
+    border: 1px solid black;
+
+  }
+
+  .nav-welcome {
+    font-size: 1rem;
+    margin-top: 1rem;
+    display: block;
+  }
+
+  .pages {
+    margin-top: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    overflow: hidden;
+    text-align: center;
+    flex-direction: column;
+  }
+
+  .logout {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .full-title {
+    display: none;
+  }
+
+  .short-title {
+    display: block;
+    font-size: 1rem;
+    margin: 0;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-family: sans-serif;
+  }
+
+  .nomenu{
+    display: none;
+
+  }
+
+  .close-menu{
+    position: fixed;
+    margin-left: 10rem;
+    margin-bottom: 6rem;
+    
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .menu {
+    display: none;
+  }
+
+  .nav-welcome {
+    font-size: 1rem;
+    margin-right: 2rem;
+  }
+
+  .pages {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .logout {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .full-title {
+    display: block;
+    font-size: 2rem;
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial;
+  }
+
+  .short-title {
+    display: none;
+  }
+
+  .nomenu{
     background-color: #c4342c;
     color: white;
     display: flex;
@@ -7,34 +162,10 @@
     gap: 5rem;
     padding-bottom: 2rem;
     font-weight: bold;
-  } 
-  
-  .site-title{
-    font-size: 2rem;
-    text-align: center;
-    text-decoration: none;
-  }
-  
-  .nav-welcome{
-    color: black;
-  }
-  .pages{
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-  }
-  
-  .nav a{
-    color: inherit;
   }
 
-  .nav li:hover{
-    background-color: #94c9f5;
+  .nav{
+    margin-left: 4rem;
+    margin-right: 4rem;
   }
-
-  .logout:hover{
-    background-color: #94c9f5;
-  }
-  
+}
