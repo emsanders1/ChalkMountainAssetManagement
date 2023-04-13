@@ -28,7 +28,7 @@ export default function Navbar() {
         }
         setTimeout(() => {
             window.location.href = "http://localhost:3000/login";
-        }, 600); // wait for half a second before redirecting
+        }, 500); // wait for half a second before redirecting
     }
      
 
