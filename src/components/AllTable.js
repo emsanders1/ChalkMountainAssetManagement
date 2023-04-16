@@ -11,6 +11,7 @@ import './Modal.css';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
+  const [count, setCount] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const [sortColumn, setSortColumn] = useState('UNITNUMBER');
@@ -20,6 +21,18 @@ const AssetTable = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [searchInputValue, setSearchInputValue] = useState('');
+
+  useEffect(() => {
+    // Make an API call to retrieve the total count
+    fetch('http://localhost:8090/api/assets/getEquipmentCount')
+      .then(response => response.json())
+      .then(data => {
+        setCount(data.count);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,11 +174,7 @@ const AssetTable = () => {
   };
 
   const handleSearch = async (event) => {
-    // event.preventDefault();
-    // const response = await fetch(`http://tcu-dev02:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}&searchText=${searchText}`);
-    // const data = await response.json();
-    // console.log('search text:', searchText);
-    // setAssets(data);
+    
     setSearchText(event.target.value);
   };
 
@@ -291,7 +300,7 @@ const AssetTable = () => {
       )}
       <TablePagination
         component="div"
-        count={1000} 
+        count={count} 
         page={pageNumber - 1}
         rowsPerPage={pageSize}
         rowsPerPageOptions={[5,10, 25, 50, 100]}

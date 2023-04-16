@@ -72,6 +72,16 @@ router.route('/assets/trailers').get((request, response) => {
   });
 });
 
+router.route('/assets/getEquipmentCount').get((request, response) => {
+  db.getEquipmentCount()
+    .then((data) => {
+      response.status(200).json(data.recordset);
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
+});
+
 router.route('/assets/sendInService').post((request, response) => {
   const user = request.query.user;
   const assetId = request.query.assetId;
