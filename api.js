@@ -1,15 +1,34 @@
 var  db = require('./db-utils/operations');
 var  express = require('express');
 var  bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 var  cors = require('cors');
 const ldap = require('ldapjs');
-const { RoundaboutLeftRounded, RouterRounded } = require('@mui/icons-material');
 var  app = express();
 var  router = express.Router();
 
 app.use(bodyParser.urlencoded({ extended:  true }));
 app.use(bodyParser.json());
+
+app.use(session({
+  name: "SESS_NAME",
+  secret: "SESS_SECRET",
+  saveUninitialized: false,
+  resave: false,
+  cookie: {
+    sameSite: 'none',
+    secure: process.env.NODE_ENV === "production",
+    domain:'localhost:8090',
+    maxAge: 1000,
+    httpOnly: true,
+  },
+}));
+
 app.use(cors());
+
+app.use(cookieParser());
+
 app.use('/api', router);
 
 router.use((request, response, next) => {
@@ -152,62 +171,64 @@ router.route('/assets/sendOutOfService').post((request, response) => {
 var client = null;
 var groups = [];
 var username = "Signed Out User";
+sessionData = null;
 
 router.route('/ldap').post((req, res) => {
-  console.log("LDAP endpoint called!")
+  console.log("LDAP endpoint called!");  
+  console.log(req.body.username);
+  console.log(req.body.password);
+
+  const bindDomainName = `cn=${req.body.username},cn=Users,dc=ManBearPig,dc=com`;
+  const bindPassword =  `${req.body.password}`;
+
   client = ldap.createClient({
-    //url: `ldap://${req.body.host}:${req.body.port}`,
     url: 'ldap://172.16.50.3:389',
     timeout: 100000,
     idleTimeout: 300000,
-    maxWaitTime: req.body.maxWait,
-    maxConnections: req.body.maxActive,
-    bindDN: req.body.adminDn,
-    bindCredentials: req.body.adminPassword,
+    maxWaitTime: 5000,
+    maxConnections: 10,
+    bindDN: bindDomainName,
+    bindCredentials: bindPassword,
     tlsOptions: {},
     reconnect: true,
   });
 
-  client.bind(req.body.adminDn, req.body.adminPassword, (error) => {
+  client.bind(bindDomainName, bindPassword, (error) => {
     if (error) {
       console.error(error);
       return res.status(500).send({ message: 'Failed to connect to LDAP server',  error});
     } else {
-      console.log('Successfully binded to the server!')
-      res.status(200).json();
+      console.log('Successfully binded to the server!');
 
-      username = req.body.adminDn.split(',')[0].substr(3);
+      const username = bindDomainName.split(',')[0].substr(3);
+      req.session.username = username;
 
-      const opts = {
-        filter: '(objectClass=group)',
-        scope: 'sub',
-        attributes: ['CN'],
-      };
-      var base = 'dc=ManBearPig,dc=com';
-      var search_options = {
-          scope: 'sub',
-      };
-
-      client.search(req.body.adminDn, {
+      client.search(bindDomainName, {
         scope: 'base',
         attributes: ['memberOf']
       }, (err, ldapResult) => {
-        groups = [];
-    
+        const groups = [];
+
         ldapResult.on('searchEntry', (entry) => {
-          groups = entry.object.memberOf.map((group) => {
+          groups.push(...entry.object.memberOf.map((group) => {
             const groupDn = group.split(',')[0];
             const groupName = groupDn.split('=')[1];
             return groupName;
-          });
+          }));
         });
-    
+
         ldapResult.on('end', () => {
           console.log('Groups:', groups);
+          // Store the groups in the session of the user
+          req.session.groups = groups;
+          sessionData = req.sessionStore;
+          req.session.save();
+
+          // Set the session ID in a cookie on the client side
+          res.cookie('sessionId', req.session.id, { maxAge: 900000, credentials: true });
+          res.status(200).json();
         });      
       });
-
-      // client.search('OU=Groups,DC=ManBearPig,DC=com', opts, logCallback);   
     }
   });
 });

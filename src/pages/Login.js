@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import ReactDOM from "react-dom";
-import { createLdapClientAndConnect } from "../auth/ldap-authentication-client";
-
 import "./Login.css";
 
 export default function Login() {
@@ -9,37 +6,23 @@ export default function Login() {
   const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // User Login info
-  const database = [
-    {
-      username: "user1",
-      password: "pass1"
-    },
-    {
-      username: "user2",
-      password: "pass2"
-    }
-  ];
-
-  const errors = {
-    uname: "invalid username",
-    pass: "invalid password"
-  };
-
   const handleSubmit = async (event) => {
     //Prevent page reload
     event.preventDefault();
-  
-    var { uname, pass } = document.forms[0];
-    await createLdapClientAndConnect(uname.value, pass.value);
-  
-    // Find user login info
-    const userData = database.find(
-      (user) => true
-    );
-  
+
+    const response = await fetch("http://tcu-dev02:8090/api/ldap", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: document.forms[0].uname.value,
+        password: document.forms[0].pass.value     
+      })
+    });
+
     setIsSubmitted(true);
-    window.location.href = "http://localhost:3000/home";
+    // window.location.href = "http://localhost:3000/home";
   };
   
 
@@ -75,7 +58,7 @@ export default function Login() {
       <div className="login-form">
       <img  class="img" src={require('../imgs/chalk-logo.png')}alt="pic"></img>
         <div className="title">Sign In</div>
-        {isSubmitted ? <div>User is successfully logged in</div> : renderForm}
+        {isSubmitted ? <div>User is successfully logged in.</div> : renderForm}
       </div>
     </div>
   );
