@@ -1,4 +1,3 @@
-const { user } = require('./config-env');
 const config = require('./config-env'),
       sql    = require('mssql');
 
@@ -19,7 +18,22 @@ const viewAssets = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit,
     catch(error) {
         console.log(error);
     }
-}
+};
+
+const viewAssetsCount = async(statusBit, searchText) => {
+    try {
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
+            .execute('dbProcViewAssetsCount');
+
+        return assets;
+    }
+    catch(error) {
+        console.log(error);
+    }
+};
 
 const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText) => {
     try {
@@ -38,7 +52,22 @@ const viewTractors = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
     catch(error) {
         console.log(error);
     }
-}
+};
+
+const viewTractorsCount = async(statusBit, searchText) => {
+    try {
+        const pool = await sql.connect(config);
+        const assets = await pool.request()
+            .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
+            .execute('dbProcViewTractorsCount');
+
+        return assets;
+    }
+    catch(error) {
+        console.log(error);
+    }
+};
 
 const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText) => {
     try {
@@ -57,20 +86,22 @@ const viewTrailers = async(sortColumn, sortOrder, pageSize, pageNumber, statusBi
     catch(error) {
         console.log(error);
     }
-}
+};
 
-const getEquipmentCount = async() => {
+const viewTrailersCount = async(statusBit, searchText) => {
     try {
         const pool = await sql.connect(config);
-        const count = await pool.request()
-            .execute('dbProcGetEquipmentCount');
+        const assets = await pool.request()
+            .input('StatusBit', sql.Bit, statusBit)
+            .input('SearchText', sql.VarChar, searchText)
+            .execute('dbProcViewTrailersCount');
 
-        return count;
+        return assets;
     }
     catch(error) {
         console.log(error);
     }
-}
+};
 
 const sendInService = async(USER, UNITNUMBER) => {
     try {
@@ -79,7 +110,7 @@ const sendInService = async(USER, UNITNUMBER) => {
     catch(error) {
         console.log(error)
     }
-}
+};
 
 const sendOutOfService = async(USER, UNITNUMBER, NOTES) => {
     try {
@@ -94,7 +125,7 @@ const sendOutOfService = async(USER, UNITNUMBER, NOTES) => {
         } catch(error) {
         console.log(error)
     }
-}
+};
 
 const logRequest = async (USER, UNITNUMBER, newStatus) => {
     try {        
@@ -108,9 +139,9 @@ const logRequest = async (USER, UNITNUMBER, newStatus) => {
     } catch (error) {
       console.error(error);
     }
-  };
+};
 
-  const getAssetStatus = async(UNITNUMBER) => {
+const getAssetStatus = async(UNITNUMBER) => {
     try {
         const pool = await sql.connect(config);
         const request = pool.request()
@@ -126,9 +157,11 @@ const logRequest = async (USER, UNITNUMBER, newStatus) => {
 
 module.exports= {
     viewAssets,
+    viewAssetsCount,
     viewTractors,
+    viewTractorsCount,
     viewTrailers,
-    getEquipmentCount,
+    viewTrailersCount,
     sendInService,
     sendOutOfService,
     getAssetStatus

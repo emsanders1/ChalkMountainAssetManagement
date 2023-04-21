@@ -8,12 +8,12 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import SearchIcon from "@mui/icons-material/Search";
 import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import {fetchData} from './AllTable';
 import AssetModal from './Modal';
 import './Modal.css';
 
 const AssetTable = () => {
   const [assets, setAssets] = useState([]);
+  const [equipmentCount, setCount] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const [sortColumn, setSortColumn] = useState('UNITNUMBER');
@@ -26,21 +26,26 @@ const AssetTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log(document.cookie)
         try{
-            let url = `http://tcu-dev02:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+            let url = `http://localhost:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
               url += `&statusBit=${statusBit}`;
             }
-            if (searchText != ''){
+            if (searchText !== ''){
               url += `&searchText=${searchText}`;
             }
             const response = await fetch(url);
-            const data = await response.json();
+            var data = await response.json();
+            var assetCount = data['assetCount'];
+            setCount(assetCount);
 
-            const groupResponse = await fetch(`http://tcu-dev02:8090/api/ldap/getGroups`);
+            var assetList = data['assetList'];
+
+            const groupResponse = await fetch(`http://localhost:8090/api/ldap/getGroups`);
             const groupData = await groupResponse.json();
 
-            data.forEach((obj) => {          
+            assetList.forEach((obj) => {          
                 let buttonEval = false;
           
                 if(groupData.includes('ShopAdmin')) {
@@ -56,7 +61,7 @@ const AssetTable = () => {
               obj.modifiable = buttonEval;
             });
 
-            setAssets(data);
+            setAssets(assetList);
         } catch (error) {
             console.error(error);
         }
@@ -348,7 +353,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
       )}
       <TablePagination
         component="div"
-        count={1000} 
+        count={equipmentCount} 
         page={pageNumber - 1}
         rowsPerPage={pageSize}
         rowsPerPageOptions={[5,10, 25, 50, 100]}

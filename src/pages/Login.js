@@ -10,7 +10,7 @@ export default function Login() {
     //Prevent page reload
     event.preventDefault();
 
-    const response = await fetch("http://tcu-dev02:8090/api/ldap", {
+    const response = await fetch("http://localhost:8090/api/ldap", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -22,6 +22,7 @@ export default function Login() {
     });
 
     setIsSubmitted(true);
+    console.log(document.cookie)
     // window.location.href = "http://localhost:3000/home";
   };
   

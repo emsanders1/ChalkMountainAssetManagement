@@ -12,20 +12,21 @@ app.use(bodyParser.urlencoded({ extended:  true }));
 app.use(bodyParser.json());
 
 app.use(session({
-  name: "SESS_NAME",
-  secret: "SESS_SECRET",
+  secret: "secret",
   saveUninitialized: false,
   resave: false,
   cookie: {
     sameSite: 'none',
-    secure: process.env.NODE_ENV === "production",
-    domain:'localhost:8090',
-    maxAge: 1000,
-    httpOnly: true,
-  },
+    secure: false,
+    domain:'tcu-dev02',
+    maxAge: 1000
+  }
 }));
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 
 app.use(cookieParser());
 
@@ -36,24 +37,33 @@ router.use((request, response, next) => {
   next();
 });
  
- 
-router.route('/assets').get((request, response) => {
-    // Default Pagination Settings
-    let pageSize = parseInt(request.query.pageSize) || 50;
-    let pageNumber = parseInt(request.query.pageNumber) || 1;
-    let sortColumn = request.query.sortColumn || 'UNITNUMBER';
-    let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
-    let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;
-    let searchText = request.query.searchText || null;
 
-    db.viewAssets(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
-      .then((data) => {
-        response.status(200).json(data.recordset);
-    }).catch((err) => {
-        console.error(err);
-        response.status(500).json({ error: 'Internal Server Error' });
-    });
+router.route('/assets').get((request, response) => {
+  // Default Pagination Settings
+  let pageSize = parseInt(request.query.pageSize) || 50;
+  let pageNumber = parseInt(request.query.pageNumber) || 1;
+  let sortColumn = request.query.sortColumn || 'UNITNUMBER';
+  let sortOrder = request.query.sortOrder === 'DESC' ? 'DESC' : 'ASC';
+  let statusBit = request.query.statusBit === '1' ? 1 : request.query.statusBit === '0' ? 0 : null;
+  let searchText = request.query.searchText || null;
+
+  db.viewAssets(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
+    .then((data) => {
+      const assetList = data.recordset;
+      db.viewAssetsCount(statusBit, searchText)
+        .then((data) => {
+          const assetCount = data.recordset[0]['AssetCount'];
+          response.status(200).json({'assetCount': assetCount, 'assetList': assetList});
+        }).catch((err) => {
+          console.error(err);
+          response.status(500).json({ error: 'Internal Server Error' });
+        });
+  }).catch((err) => {
+      console.error(err);
+      response.status(500).json({ error: 'Internal Server Error' });
+  });
 });
+
 
 router.route('/assets/tractors').get((request, response) => {
   // Default Pagination Settings
@@ -66,7 +76,15 @@ router.route('/assets/tractors').get((request, response) => {
 
   db.viewTractors(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
     .then((data) => {
-      response.status(200).json(data.recordset);
+      const assetList = data.recordset;
+      db.viewTractorsCount(statusBit, searchText)
+        .then((data) => {
+          const assetCount = data.recordset[0]['AssetCount'];
+          response.status(200).json({'assetCount': assetCount, 'assetList': assetList});
+        }).catch((err) => {
+          console.error(err);
+          response.status(500).json({ error: 'Internal Server Error' });
+        })
   }).catch((err) => {
       console.error(err);
       response.status(500).json({ error: 'Internal Server Error' });
@@ -84,17 +102,15 @@ router.route('/assets/trailers').get((request, response) => {
 
   db.viewTrailers(sortColumn, sortOrder, pageSize, pageNumber, statusBit, searchText)
     .then((data) => {
-      response.status(200).json(data.recordset);
-  }).catch((err) => {
-      console.error(err);
-      response.status(500).json({ error: 'Internal Server Error' });
-  });
-});
-
-router.route('/assets/getEquipmentCount').get((request, response) => {
-  db.getEquipmentCount()
-    .then((data) => {
-      response.status(200).json(data.recordset);
+      const assetList = data.recordset;
+      db.viewTrailersCount(statusBit, searchText)
+        .then((data) => {
+          const assetCount = data.recordset[0]['AssetCount'];
+          response.status(200).json({'assetCount': assetCount, 'assetList': assetList});
+        }).catch((err) => {
+          console.error(err);
+          response.status(500).json({ error: 'Internal Server Error' });
+        })
   }).catch((err) => {
       console.error(err);
       response.status(500).json({ error: 'Internal Server Error' });
@@ -225,7 +241,7 @@ router.route('/ldap').post((req, res) => {
           req.session.save();
 
           // Set the session ID in a cookie on the client side
-          res.cookie('sessionId', req.session.id, { maxAge: 900000, credentials: true });
+          res.cookie('sessionId', req.session.id, { maxAge: 900000, credentials: true, path: '/', secure: false });
           res.status(200).json();
         });      
       });
