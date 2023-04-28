@@ -39,7 +39,14 @@ const AssetTable = () => {
 
             var assetList = data['assetList'];
 
-            const groupResponse = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+            const groupResponse = await fetch('http://localhost:8090/api/ldap/getGroups', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'sessionId': document.cookie.split('=')[1]
+              }
+            });
             const groupData = await groupResponse.json();
 
             assetList.forEach((obj) => {          
@@ -108,10 +115,6 @@ const AssetTable = () => {
     setIsModalOpen(true);
   };
   
-  // const handleModalClose = () => {
-  //   setIsModalOpen(false);
-  // };
-
   const handleOpenModal = (asset) => {
     setSelectedAsset(asset);
     handleModalOpen();
@@ -119,22 +122,17 @@ const AssetTable = () => {
 
   const handleInService = async () => {
     try {
-      var ldapUsername = ""
-      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
-      const data1 = await response1.json()
-      if(data1 ===  "Signed Out User") {
-        ldapUsername = "NULL"
-       } else {
-        ldapUsername = data1
-       }
-
-      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}`, {
+      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedAsset),
+        headers: { 
+          'Content-Type': 'application/json',
+          'sessionId': document.cookie.split('=')[1]
+        },
+        body: JSON.stringify({
+          assetId: selectedAsset.UNITNUMBER
+        }),
       });
       const data = await response.json();
-      console.log(data);
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -143,22 +141,18 @@ const AssetTable = () => {
 
   const handleOutOfService = async (note) => {
     try {
-      var ldapUsername = ""
-      const response1 = await fetch('http://localhost:8090/api/ldap/getName');
-      const data1 = await response1.json()
-      if(data1 ===  "Signed Out User") {
-        ldapUsername = "NULL"
-       } else {
-        ldapUsername = data1
-       }
-
-      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}&notes=${note}`, {
+      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedAsset),
+        headers: { 
+          'Content-Type': 'application/json',
+          'sessionId': document.cookie.split('=')[1]
+        },
+        body: JSON.stringify({
+          assetId: selectedAsset.UNITNUMBER,
+          notes: note
+        }),
       });
       const data = await response.json();
-      console.log(data);
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);

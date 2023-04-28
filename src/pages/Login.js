@@ -4,12 +4,11 @@ import "./Login.css";
 export default function Login() {
   // React States
   const [errorMessages, setErrorMessages] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (event) => {
     //Prevent page reload
     event.preventDefault();
-
+  
     const response = await fetch("http://localhost:8090/api/ldap", {
       method: 'POST',
       headers: {
@@ -18,15 +17,18 @@ export default function Login() {
       body: JSON.stringify({
         username: document.forms[0].uname.value,
         password: document.forms[0].pass.value     
-      })
+      }),
+      credentials: 'include'
     });
-
-    setIsSubmitted(true);
-    console.log(document.cookie)
-    // window.location.href = "http://localhost:3000/home";
+  
+    if (response.ok) {
+        window.location.href = "http://localhost:3000/home";
+    } else { // Handle error response
+      const error = await response.json();
+      setErrorMessages({ name: "login", message: error.message });
+    }
   };
   
-
   // Generate JSX code for error message
   const renderErrorMessage = (name) =>
     name === errorMessages.name && (
@@ -59,7 +61,7 @@ export default function Login() {
       <div className="login-form">
       <img  class="img" src={require('../imgs/chalk-logo.png')}alt="pic"></img>
         <div className="title">Sign In</div>
-        {isSubmitted ? <div>User is successfully logged in.</div> : renderForm}
+        {renderForm}
       </div>
     </div>
   );

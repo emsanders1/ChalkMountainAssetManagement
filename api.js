@@ -1,8 +1,8 @@
 var  db = require('./db-utils/operations');
 var  express = require('express');
-var  bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+var  bodyParser = require('body-parser');
 var  cors = require('cors');
 const ldap = require('ldapjs');
 var  app = express();
@@ -12,16 +12,19 @@ app.use(bodyParser.urlencoded({ extended:  true }));
 app.use(bodyParser.json());
 
 app.use(session({
-  secret: "secret",
+  name: "SESS_NAME",
+  secret: "SESS_SECRET",
   saveUninitialized: false,
   resave: false,
   cookie: {
     sameSite: 'none',
-    secure: false,
-    domain:'tcu-dev02',
-    maxAge: 1000
-  }
+    secure: process.env.NODE_ENV === "production",
+    domain:'localhost:8090',
+    maxAge: 1000,
+    httpOnly: true,
+  },
 }));
+
 
 app.use(cors({
   origin: "http://localhost:3000",
@@ -63,7 +66,6 @@ router.route('/assets').get((request, response) => {
       response.status(500).json({ error: 'Internal Server Error' });
   });
 });
-
 
 router.route('/assets/tractors').get((request, response) => {
   // Default Pagination Settings
@@ -118,11 +120,13 @@ router.route('/assets/trailers').get((request, response) => {
 });
 
 router.route('/assets/sendInService').post((request, response) => {
-  const user = request.query.user;
-  const assetId = request.query.assetId;
+  const sessionId = request.get("sessionId");
+  const username = allSessionData[sessionId].username;
+  const groups = allSessionData[sessionId].groups;
+  const assetId = request.body.assetId;
 
-  if (!user || !assetId) {
-    return response.status(400).send('User and asset ID are required.');
+  if(!groups.includes('ShopAdmin') && !groups.includes('Mechanic')) {
+    return response.status(401).send('User not authorized.')
   }
 
   db.getAssetStatus(assetId).then((data)  => {
@@ -131,13 +135,12 @@ router.route('/assets/sendInService').post((request, response) => {
     }
 
     const assetStatus = data.recordset[0]['STATUS'];
-    console.log("api.js sendInService getAssetStatus" + assetStatus)
 
     if (assetStatus) {
       return response.status(304).send('Asset is already in service.');
     }
 
-    db.sendInService(user, assetId).then(() => {
+    db.sendInService(username, assetId).then(() => {
       response.sendStatus(200);
     }).catch((error) => {
       console.error('Error sending asset in service:', error);
@@ -150,12 +153,14 @@ router.route('/assets/sendInService').post((request, response) => {
 });
 
 router.route('/assets/sendOutOfService').post((request, response) => {
-  const user = request.query.user;
-  const assetId = request.query.assetId;
-  const notes = request.query.notes;
+  const sessionId = request.get("sessionId");
+  const username = allSessionData[sessionId].username;
+  const groups = allSessionData[sessionId].groups;
+  const assetId = request.body.assetId;
+  const notes = request.body.notes;
 
-  if (!user || !assetId || !notes) {
-    return response.status(400).send('User, asset ID, and notes are required.');
+  if(!groups.includes('ShopAdmin') && !groups.includes('YardCoordinator')) {
+    return response.status(401).send('User not authorized.')
   }
 
   db.getAssetStatus(assetId).then((data)  => {
@@ -170,9 +175,8 @@ router.route('/assets/sendOutOfService').post((request, response) => {
     }
 
     const cleanNotes = notes.replace(/[^a-zA-Z0-9 ,.;_]/g, '');
-    console.log("Clean notes " + cleanNotes)
 
-    db.sendOutOfService(user, assetId, cleanNotes).then(() => {
+    db.sendOutOfService(username, assetId, cleanNotes).then(() => {
       response.sendStatus(200);
     }).catch((error) => {
       console.error('Error sending asset out of service:', error);
@@ -184,10 +188,7 @@ router.route('/assets/sendOutOfService').post((request, response) => {
   });
 });
 
-var client = null;
-var groups = [];
-var username = "Signed Out User";
-sessionData = null;
+let allSessionData = {};
 
 router.route('/ldap').post((req, res) => {
   console.log("LDAP endpoint called!");  
@@ -195,7 +196,7 @@ router.route('/ldap').post((req, res) => {
   console.log(req.body.password);
 
   const bindDomainName = `cn=${req.body.username},cn=Users,dc=ManBearPig,dc=com`;
-  const bindPassword =  `${req.body.password}`;
+  const bindPassword = `${req.body.password}`;
 
   client = ldap.createClient({
     url: 'ldap://172.16.50.3:389',
@@ -218,7 +219,7 @@ router.route('/ldap').post((req, res) => {
 
       const username = bindDomainName.split(',')[0].substr(3);
       req.session.username = username;
-
+      console.log("Username:", req.session.username);
       client.search(bindDomainName, {
         scope: 'base',
         attributes: ['memberOf']
@@ -237,7 +238,8 @@ router.route('/ldap').post((req, res) => {
           console.log('Groups:', groups);
           // Store the groups in the session of the user
           req.session.groups = groups;
-          sessionData = req.sessionStore;
+          allSessionData[req.session.id] = req.session;
+          console.log(allSessionData)
           req.session.save();
 
           // Set the session ID in a cookie on the client side
@@ -250,46 +252,37 @@ router.route('/ldap').post((req, res) => {
 });
 
 router.route('/ldap/getGroups').get((req, res) => {
-  res.status(200).json(groups);
+  const sessionId = req.get("sessionId")
+  const session = allSessionData[sessionId];
+  if (session) {
+    res.status(200).json(session.groups);
+  } else {
+    res.status(200).json([]);
+  }
 });
 
-router.route('/ldap/logout').get((req, res) => {
-  username = "Signed Out User";
-  groups = [];
-  client.unbind(() => {
+router.route('/ldap/logout').post((req, res) => {
+  const sessionId = req.get("sessionId");
+  const session = allSessionData[sessionId];
+  if (session) {
+    delete allSessionData[sessionId]; // Remove the session data
     res.status(200).json();
-  })
+  } else {
+    res.status(200).json({ message: 'Session does not exist!' });
+  }
 });
+
+
 
 router.route('/ldap/getName').get((req, res) => {
-  res.status(200).json(username);
-});
-
-function logCallback(err,res) {
-  if(!res) {
-      console.log(err)
-      return
+  const sessionId = req.get("sessionId");
+  const session = allSessionData[sessionId];
+  if (session) {
+    res.status(200).json(session.username);
+  } else {
+    res.status(200).json("");
   }
-  
-  res.on('searchRequest', (searchRequest) => {
-      console.log('searchRequest: ', searchRequest.messageID);
-  });
-  res.on('searchEntry', (entry) => {
-      console.log('entry: ' + JSON.stringify(entry.object));
-  });
-  res.on('searchReference', (referral) => {
-      console.log('referral: ' + referral.uris.join());
-  });
-  res.on('error', (err) => {
-      console.error('error: ' + err.message);
-  });
-  res.on('end', (result) => {
-      console.log('status: ' + result?.status);
-  });
-}
-
-exports.username = username;
-exports.groups = groups;
+});
 
 var port = process.env.PORT || 8090;
 app.listen(port);

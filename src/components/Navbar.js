@@ -8,7 +8,14 @@ export default function Navbar() {
     useEffect(() => {
         async function fetchUserName() {
             try {
-                const response = await axios.get('http://localhost:8090/api/ldap/getName');
+                const response = await axios.get('http://localhost:8090/api/ldap/getName', {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Access-Control-Allow-Origin': '*',
+                      'sessionId': document.cookie.split('=')[1]
+                    }
+                });
                 if(response.data ===  "Signed Out User") {
                     setUserName('')
                 } else {
@@ -24,15 +31,19 @@ export default function Navbar() {
 
     const signout = async () => {
         try {
-            await fetch('http://localhost:8090/api/ldap/logout');
+          const sessionId = document.cookie.split('=')[1]
+          const options = {
+            method: 'POST',
+            headers: { 'sessionId': sessionId },
+          };
+          await fetch('http://localhost:8090/api/ldap/logout', options);
+          document.cookie = "sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          window.location.href = "http://localhost:3000/login";
         } catch (error) {
-            console.error(error);
+          console.error(error);
         }
-        setTimeout(() => {
-            window.location.href = "http://localhost:3000/login";
-        }, 500); // wait for half a second before redirecting
-    }
-
+      }
+      
     const toggleMenu = () => {
         setShowMenu(!showMenu);
     }
