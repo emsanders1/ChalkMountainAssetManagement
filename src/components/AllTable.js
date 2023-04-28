@@ -23,7 +23,7 @@ const AssetTable = () => {
   // const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
+     const fetchData = async () => {
         try{
             let url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){

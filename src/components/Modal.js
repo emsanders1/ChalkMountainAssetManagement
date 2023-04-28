@@ -3,12 +3,7 @@ import { Modal, Button, TextField } from '@mui/material';
 import './Modal.css';
 
 const AssetModal = ({ isOpen, selectedAsset, handleInService, handleOutOfService, handleClose }) => {
-  const [isInService, setIsInService] = useState(selectedAsset.STATUS === 'In Service');
   const [note, setNote] = useState('');
-
-  const handleChange = (event) => {
-    setIsInService(event.target.value === 'In Service');
-  };
 
   const handleNoteChange = (event) => {
     setNote(event.target.value);
@@ -16,7 +11,7 @@ const AssetModal = ({ isOpen, selectedAsset, handleInService, handleOutOfService
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (isInService) {
+    if (!selectedAsset.STATUS) {
       handleInService();
     } else {
       handleOutOfService(note);
@@ -35,12 +30,12 @@ const AssetModal = ({ isOpen, selectedAsset, handleInService, handleOutOfService
           <form onSubmit={handleSubmit}>
             <div>
               <label htmlFor="status">Set Status:</label>
-              <select id="status" name="status" value={isInService ? 'In Service' : 'Out of Service'} onChange={handleChange}>
-                <option value="In Service">In Service</option>
-                <option value="Out of Service">Out of Service</option>
+              <select id="status" name="status" value={selectedAsset.STATUS ? "Out of Service" : "In Service"}>
+                <option value="In Service" disabled={selectedAsset.STATUS}>In Service</option>
+                <option value="Out of Service" disabled={!selectedAsset.STATUS}>Out of Service</option>
               </select>
             </div>
-            {!isInService && (
+            {selectedAsset.STATUS && (
               <div className="modal-note">
                 <label htmlFor="note">Note:</label>
                 <textarea
