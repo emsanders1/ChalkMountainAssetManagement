@@ -191,10 +191,6 @@ router.route('/assets/sendOutOfService').post((request, response) => {
 let allSessionData = {};
 
 router.route('/ldap').post((req, res) => {
-  console.log("LDAP endpoint called!");  
-  console.log(req.body.username);
-  console.log(req.body.password);
-
   const bindDomainName = `cn=${req.body.username},cn=Users,dc=ManBearPig,dc=com`;
   const bindPassword = `${req.body.password}`;
 
@@ -219,7 +215,6 @@ router.route('/ldap').post((req, res) => {
 
       const username = bindDomainName.split(',')[0].substr(3);
       req.session.username = username;
-      console.log("Username:", req.session.username);
       client.search(bindDomainName, {
         scope: 'base',
         attributes: ['memberOf']
@@ -245,7 +240,7 @@ router.route('/ldap').post((req, res) => {
           // Set the session ID in a cookie on the client side
           res.cookie('sessionId', req.session.id, { maxAge: 900000, credentials: true, path: '/', secure: false });
           res.status(200).json();
-        });      
+        });
       });
     }
   });

@@ -129,6 +129,7 @@ const AssetTable = () => {
         }),
       });
       await response.json();
+      fetchData();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -281,7 +282,7 @@ const AssetTable = () => {
           selectedAsset={selectedAsset}
           handleInService={handleInService}
           handleOutOfService={handleOutOfService}
-          handleClose={() => setSelectedAsset(null)}
+          handleClose={() => {setSelectedAsset(null); fetchData(); }}
         />
       )}
       <TablePagination

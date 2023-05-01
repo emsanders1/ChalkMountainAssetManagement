@@ -17,6 +17,9 @@ const AssetModal = ({ isOpen, selectedAsset, handleInService, handleOutOfService
       handleOutOfService(note);
     }
     handleClose();
+     setTimeout(function() {
+      window.location.reload();
+    }, 100);
   };
 
   return (

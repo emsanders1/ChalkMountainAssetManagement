@@ -47,14 +47,6 @@ export default function Login() {
         </div>
         <div className="button-container">
           <input value="Submit" type="submit" />
-          <input
-            className="continue-button"
-            type="submit"
-            value="Continue..."
-            onClick={() => {
-              window.location.href = "http://localhost:3000/home";
-            }}
-          />
         </div>
       </form>
     </div>
