@@ -20,9 +20,7 @@ const AssetTable = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [searchInputValue, setSearchInputValue] = useState('');
 
-  useEffect(() => {
      const fetchData = async () => {
         try{
             let url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
@@ -70,8 +68,6 @@ const AssetTable = () => {
             console.error(error);
         }
     };
-    fetchData();
-  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   const handlePageSizeChange = (event) => {
     console.log("Page size changed to:", event.target.value);
@@ -132,7 +128,7 @@ const AssetTable = () => {
           assetId: selectedAsset.UNITNUMBER
         }),
       });
-      const data = await response.json();
+      await response.json();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -152,7 +148,7 @@ const AssetTable = () => {
           notes: note
         }),
       });
-      const data = await response.json();
+      await response.json();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -163,6 +159,10 @@ const AssetTable = () => {
     
     setSearchText(event.target.value);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   return (
     <>

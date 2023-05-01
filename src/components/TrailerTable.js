@@ -5,8 +5,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import SearchIcon from "@mui/icons-material/Search";
-import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import AssetModal from './Modal';
 import './Modal.css';
@@ -22,11 +20,8 @@ const AssetTable = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [searchInputValue, setSearchInputValue] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log(document.cookie)
+     const fetchData = async () => {
         try{
             let url = `http://localhost:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
             if (statusBit != null){
@@ -42,7 +37,14 @@ const AssetTable = () => {
 
             var assetList = data['assetList'];
 
-            const groupResponse = await fetch(`http://localhost:8090/api/ldap/getGroups`);
+            const groupResponse = await fetch('http://localhost:8090/api/ldap/getGroups', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'sessionId': document.cookie.split('=')[1]
+              }
+            });
             const groupData = await groupResponse.json();
 
             assetList.forEach((obj) => {          
@@ -66,8 +68,6 @@ const AssetTable = () => {
             console.error(error);
         }
     };
-    fetchData();
-  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   const handlePageSizeChange = (event) => {
     console.log("Page size changed to:", event.target.value);
@@ -111,10 +111,6 @@ const AssetTable = () => {
     setIsModalOpen(true);
   };
   
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
   const handleOpenModal = (asset) => {
     setSelectedAsset(asset);
     handleModalOpen();
@@ -122,22 +118,17 @@ const AssetTable = () => {
 
   const handleInService = async () => {
     try {
-      var ldapUsername = ""
-      const response1 = await fetch('http://tcu-dev02:8090/api/ldap/getName');
-      const data1 = await response1.json()
-      if(data1 ===  "Signed Out User") {
-        ldapUsername = "NULL"
-       } else {
-        ldapUsername = data1
-       }
-
-      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendInService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}`, {
+      const response = await fetch(`http://localhost:8090/api/assets/sendInService?assetId`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedAsset),
+        headers: { 
+          'Content-Type': 'application/json',
+          'sessionId': document.cookie.split('=')[1]
+        },
+        body: JSON.stringify({
+          assetId: selectedAsset.UNITNUMBER
+        }),
       });
-      const data = await response.json();
-      console.log(data);
+      await response.json();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -146,102 +137,44 @@ const AssetTable = () => {
 
   const handleOutOfService = async (note) => {
     try {
-      var ldapUsername = ""
-      const response1 = await fetch('http://tcu-dev02:8090/api/ldap/getName');
-      const data1 = await response1.json()
-      if(data1 ===  "Signed Out User") {
-        ldapUsername = "NULL"
-       } else {
-        ldapUsername = data1
-       }
-
-      const response = await fetch(`http://tcu-dev02:8090/api/assets/sendOutOfService?assetId=${selectedAsset.UNITNUMBER}&user=${ldapUsername}&notes=${note}`, {
+      const response = await fetch(`http://localhost:8090/api/assets/sendOutOfService`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedAsset),
+        headers: { 
+          'Content-Type': 'application/json',
+          'sessionId': document.cookie.split('=')[1]
+        },
+        body: JSON.stringify({
+          assetId: selectedAsset.UNITNUMBER,
+          notes: note
+        }),
       });
-      const data = await response.json();
-      console.log(data);
+      await response.json();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
     }
   };
 
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.55),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.75),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
+  const handleSearch = async (event) => {
+    
+    setSearchText(event.target.value);
+  };
 
-
-const handleSearch = (event) => {
-  setSearchText(event.target.value);
-};
-
-// const handleSearchInput = (event) => {
-//   setSearchInputValue(event.target.value);
-// };
-
-// const handleSearchBlur = () => {
-//   setSearchText(searchInputValue);
-// };
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
-
+  useEffect(() => {
+    fetchData();
+  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
 
   return (
     <>
      <div className="switchbar">
-            <ButtonGroup variant="contained" color="error" className="switch" aria-label="First group">
+            <ButtonGroup variant="contained" color="error" className="switch" >
                 <Button onClick={filterAllFunction}>All</Button>
                 <Button onClick={filterInFunction}>In-Service</Button>
                 <Button onClick={filterOutFunction}>Out-of-Service</Button>
             </ButtonGroup>
-            <Search>
-                <SearchIconWrapper>
-                    <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                   placeholder="Search…"
-                   inputProps={{ 'aria-label': 'search' }}
-                   onChange={handleSearch}
-                />
-            </Search>
+            <form id="search-form" >
+                <InputBase style={{ backgroundColor: 'white', fontFamily: 'fantasy'}} placeholder="Search..." onChange={handleSearch}/>
+            </form>
         </div>
       <TableContainer>
         <Table>
@@ -359,6 +292,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         rowsPerPageOptions={[5,10, 25, 50, 100]}
         onPageChange={handlePageNumberChange}
         onRowsPerPageChange={handlePageSizeChange}
+        className="pagination"
       />
     </>
   );
