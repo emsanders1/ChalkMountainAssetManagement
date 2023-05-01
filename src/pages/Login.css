@@ -35,7 +35,8 @@
   .button-container {
     width: 300px;
     display: flex;
-    justify-content: center;
+    margin-top: 10px;
+    justify-content: space-between;
   }
   
   .login-form {

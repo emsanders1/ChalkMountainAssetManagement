@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import "./Login.css";
 
 export default function Login() {
-  // React States
   const [errorMessages, setErrorMessages] = useState({});
 
   const handleSubmit = async (event) => {
-    //Prevent page reload
     event.preventDefault();
   
     const response = await fetch("http://localhost:8090/api/ldap", {
@@ -23,34 +21,40 @@ export default function Login() {
   
     if (response.ok) {
         window.location.href = "http://localhost:3000/home";
-    } else { // Handle error response
+    } else {
       const error = await response.json();
       setErrorMessages({ name: "login", message: error.message });
     }
   };
   
-  // Generate JSX code for error message
   const renderErrorMessage = (name) =>
     name === errorMessages.name && (
       <div className="error">{errorMessages.message}</div>
     );
 
-  // JSX code for login form
   const renderForm = (
     <div className="form">
       <form onSubmit={handleSubmit}>
         <div className="input-container">
-          <label>Username </label>
-          <input type="text" name="uname" required />
+          <label>Username</label>
+          <input type="text" name="uname" required/>
           {renderErrorMessage("uname")}
         </div>
         <div className="input-container">
-          <label>Password </label>
-          <input type="password" name="pass" required />
+          <label>Password</label>
+          <input type="password" name="pass" required/>
           {renderErrorMessage("pass")}
         </div>
         <div className="button-container">
           <input value="Submit" type="submit" />
+          <input
+            className="continue-button"
+            type="submit"
+            value="Continue..."
+            onClick={() => {
+              window.location.href = "http://localhost:3000/home";
+            }}
+          />
         </div>
       </form>
     </div>

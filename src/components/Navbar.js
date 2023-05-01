@@ -4,24 +4,28 @@ import axios from "axios";
 export default function Navbar() {
     const [userName, setUserName] = useState('');
     const [showMenu, setShowMenu] = useState(false);
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
     useEffect(() => {
         async function fetchUserName() {
             try {
-                const response = await axios.get('http://localhost:8090/api/ldap/getName', {
-                    method: 'GET',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'Access-Control-Allow-Origin': '*',
-                      'sessionId': document.cookie.split('=')[1]
+                const sessionId = getCookie("sessionId");
+                if (sessionId) {
+                    setIsUserLoggedIn(true);
+                    const response = await axios.get('http://localhost:8090/api/ldap/getName', {
+                        method: 'GET',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'sessionId': sessionId
+                        }
+                    });
+                    if(response.data ===  "Signed Out User") {
+                        setUserName('')
+                    } else {
+                        setUserName(", " + response.data);
                     }
-                });
-                if(response.data ===  "Signed Out User") {
-                    setUserName('')
-                } else {
-                    setUserName(", " + response.data);
                 }
-            
             } catch (error) {
                 console.error(error);
             }
@@ -38,11 +42,15 @@ export default function Navbar() {
           };
           await fetch('http://localhost:8090/api/ldap/logout', options);
           document.cookie = "sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          window.location.href = "http://localhost:3000/login";
+          signin();
         } catch (error) {
           console.error(error);
         }
-      }
+    }
+
+    const signin = async () => {
+        window.location.href = "http://localhost:3000/login";
+    }
       
     const toggleMenu = () => {
         setShowMenu(!showMenu);
@@ -50,6 +58,17 @@ export default function Navbar() {
 
     const closeMenu = () => {
         setShowMenu(false);
+    }
+
+    const getCookie = (name) => {
+        const cookieArray = document.cookie.split(';');
+        for (let i = 0; i < cookieArray.length; i++) {
+            const cookie = cookieArray[i].trim();
+            if (cookie.startsWith(`${name}=`)) {
+                return cookie.substring(`${name}=`.length, cookie.length);
+            }
+        }
+        return null;
     }
 
     return (
@@ -74,7 +93,11 @@ export default function Navbar() {
                 <div className="menu-toggle">
                     <button onClick={toggleMenu} className="menu-icon">&#9776;</button>
                     <a href="/" className="short-title">CMSAM</a>
-                    <button onClick={signout} className="logout"> Logout</button>
+                    {isUserLoggedIn ? (
+                        <button onClick={signout} className="logout">Logout</button>
+                    ) : (
+                        <a href="http://localhost:3000/login" className="logout">Login</a>
+                    )}
                 </div>
             )}
 
@@ -92,7 +115,11 @@ export default function Navbar() {
                 </ul>
                 <a href="/" className="full-title">Chalk Mountain Services Asset Management</a>
                 <p className="nav-welcome">Welcome{userName}!</p>
-                <button onClick={signout} className="logout"> Logout</button>
+                {isUserLoggedIn ? (
+                    <button onClick={signout} className="logout">Logout</button>
+                ) : (
+                    <button onClick={signin} className="logout">Login</button>
+                )}
             </div>
         </nav>        
     )
