@@ -1,10 +1,10 @@
-import Table from "../components/TrailerTable"
+import Table from "../components/AllTable"
 import Navbar from "../components/Navbar"
-export default function Tractors(){
+export default function Trailers(){
     return(
-        <div className="Tractors">
+        <div className="Trailers">
             <Navbar/>
-            <Table/>
+            <Table assetType="trailers"/>
         </div>
     )
 }

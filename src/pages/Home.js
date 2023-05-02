@@ -4,7 +4,7 @@ export default function Home(){
     return(
         <div className="Home">
         <Navbar/>
-        <Table/>
+        <Table assetType="all" />
         </div>
     )
 }

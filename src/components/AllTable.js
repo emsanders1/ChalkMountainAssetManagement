@@ -9,7 +9,7 @@ import InputBase from "@mui/material/InputBase";
 import AssetModal from './Modal';
 import './Modal.css';
 
-const AssetTable = () => {
+const AssetTable = ({ assetType}) => {
   const [assets, setAssets] = useState([]);
   const [equipmentCount, setCount] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -23,14 +23,21 @@ const AssetTable = () => {
 
      const fetchData = async () => {
         try{
-            let url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
-            if (statusBit != null){
-              url += `&statusBit=${statusBit}`;
-            }
-            if (searchText !== ''){
-              url += `&searchText=${searchText}`;
-            }
-            const response = await fetch(url);
+          let url;
+          if (assetType === 'tractors') {
+            url = `http://localhost:8090/api/assets/tractors?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+          } else if (assetType === 'trailers') {
+            url = `http://localhost:8090/api/assets/trailers?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+          } else {
+            url = `http://localhost:8090/api/assets?pageSize=${pageSize}&pageNumber=${pageNumber}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`;
+          }
+          if (statusBit != null) {
+            url += `&statusBit=${statusBit}`;
+          }
+          if (searchText !== '') {
+            url += `&searchText=${searchText}`;
+          }
+          const response = await fetch(url);
             var data = await response.json();
             var assetCount = data['assetCount'];
             setCount(assetCount);
