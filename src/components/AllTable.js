@@ -129,7 +129,6 @@ const AssetTable = () => {
         }),
       });
       await response.json();
-      fetchData();
       setSelectedAsset(null);
     } catch (error) {
       console.error(error);
@@ -163,7 +162,7 @@ const AssetTable = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText]);
+  }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText, selectedAsset]);
 
   return (
     <>
@@ -282,7 +281,7 @@ const AssetTable = () => {
           selectedAsset={selectedAsset}
           handleInService={handleInService}
           handleOutOfService={handleOutOfService}
-          handleClose={() => {setSelectedAsset(null); fetchData(); }}
+          handleClose={() => {setSelectedAsset(null); }}
         />
       )}
       <TablePagination
