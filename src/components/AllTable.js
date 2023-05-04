@@ -102,16 +102,19 @@ const AssetTable = ({ assetType}) => {
   const filterInFunction = (event) => {
     setStatusBit(event.target.value);
     setStatusBit(1);
+    setPageNumber(1);
   };
 
   const filterOutFunction = (event) => {
     setStatusBit(event.target.value);
     setStatusBit(0);
+    setPageNumber(1);
   };
 
   const filterAllFunction = (event) => {
     setStatusBit(event.target.value);
     setStatusBit(null);
+    setPageNumber(1);
   };
 
   const handleModalOpen = () => {
@@ -163,12 +166,13 @@ const AssetTable = ({ assetType}) => {
   };
 
   const handleSearch = async (event) => {
-    
     setSearchText(event.target.value);
   };
 
   useEffect(() => {
-    fetchData();
+    setTimeout(function() {
+      fetchData();
+    }, 100);
   }, [pageSize, pageNumber, sortColumn, sortOrder, statusBit, searchText, selectedAsset]);
 
   return (
